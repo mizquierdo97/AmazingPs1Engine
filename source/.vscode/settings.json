@@ -1,5 +1,13 @@
 {
     "files.associations": {
-        "MAIN.C": "cpp"
-    }
+        "MAIN.C": "cpp",
+        "dcrender.h": "c"
+    },
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "c:\\Users\\mizqu\\Documents\\GitHub\\AmazingPs1Engine\\source",
+            "binaryPath": "c:\\Users\\mizqu\\Documents\\GitHub\\AmazingPs1Engine\\source\\MAIN.elf",
+            "binaryArgs": []
+        }
+    ]
 }

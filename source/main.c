@@ -14,6 +14,7 @@
 #include "dcLevel.h"
 #include "dcMemory.h"
 #include "dcMisc.h"
+#include "dcSprite.h"
 #include "dcCollision.h"
 #include "../third_party/modplayer/modplayer.h"
 
@@ -46,15 +47,28 @@ void InitLevel()
 
     CVECTOR  AmbientColor = {0, 0, 0, 0};
     dcLevel_InitLight(&MainLevel, &AmbientColor);
-
-   /*
-    SVECTOR LightDirection = {-ONE, ONE, 0};
-    SVECTOR LightColor = {ONE, ONE, ONE};
-    dcLevel_SetLight(&MainLevel, 0, &LightDirection, &LightColor);
+    MainLevel.NumObjects = 0;
     //Ambient Light
     dcRender_SetAmbientColor(&Render, &MainLevel.AmbientColor);
+    SVECTOR LightDirection = {-ONE, ONE, 0};
+    SVECTOR LightColor = {ONE, 0, ONE};
+    dcLevel_SetLight(&MainLevel, 0, &LightDirection, &LightColor);
     // Set Color matrix
-    SetColorMatrix(&MainLevel.ColorMatrix);*/
+    SetColorMatrix(&MainLevel.ColorMatrix);
+
+    SDC_Object *Sphere = NULL;
+    Sphere = (SDC_Object*) malloc3(sizeof(SDC_Object));
+    VECTOR SphereLocation = {0, 0, 0, 0};
+    Sphere->Location = SphereLocation;
+    Sphere->Mesh = dcMisc_generateSphereMesh(CUBESIZE, 7, 7);
+    dcLevel_AddObject(&MainLevel, Sphere);
+
+        SDC_Object *Sphere2 = NULL;
+    Sphere2 = (SDC_Object*) malloc3(sizeof(SDC_Object));
+    VECTOR SphereLocation2 = {400, 0, 0, 0};
+    Sphere2->Location = SphereLocation2;
+    Sphere2->Mesh = dcMisc_generateSphereMesh(CUBESIZE, 7, 7);
+    dcLevel_AddObject(&MainLevel, Sphere2);
 }
 
 int main(void) 
@@ -63,14 +77,11 @@ int main(void)
     InitLevel();
 
 //To level
-    SDC_Mesh3D* sphereMesh = dcMisc_generateSphereMesh(CUBESIZE, 7, 7);
 
     long CameraDistance = 800;
     dcCamera_SetCameraPosition(&Camera, 0, 0, CameraDistance);
     dcCamera_LookAt(&Camera, &VECTOR_ZERO);
 
-    SVECTOR rotation = {0};
-    VECTOR translation = {0, 0, 0, 0};
     MATRIX transform;
     //
 
@@ -95,7 +106,10 @@ int main(void)
         // Find rotmat from light angles
         RotMatrix_gte(&MainLevel.LightAngle, &MainLevel.RotLight);
         // Find rotmat from cube angles
-        RotMatrix_gte(&rotation, &MainLevel.RotObject);  
+        
+for(int i = 0; i < MainLevel.NumObjects; i++)
+{    
+        RotMatrix_gte(&MainLevel.Objects[i]->Rotation, &MainLevel.RotObject);  
         // RotMatrix cube * RotMatrix light
         MulMatrix0(&MainLevel.RotObject, &MainLevel.RotLight, &MainLevel.RotLight);
         // Light Matrix * RotMatrix light 
@@ -103,22 +117,21 @@ int main(void)
         // Set new light matrix 
         SetLightMatrix(&MainLevel.WorldLightMatrix);
 
-        RotMatrix(&rotation, &transform);
-        TransMatrix(&transform, &translation);
+        RotMatrix(&MainLevel.Objects[i]->Rotation, &transform);
+        TransMatrix(&transform, & MainLevel.Objects[i]->Location);
         dcCamera_ApplyCameraTransform(&Camera, &transform, &transform);
 
         FntPrint("GameDev Challenge Sphere Demo\n");
 
+
         SVECTOR rayDir = { Camera.viewMatrix.m[2][0], Camera.viewMatrix.m[2][1], Camera.viewMatrix.m[2][2] };
         VectorNormalSS(&rayDir, &rayDir);
-
-
-        dcRender_DrawMesh(&Render, sphereMesh, &transform, &drawParams);
-       
+        printf("MIQUELLOG: %i --- %i --- %i \n ", transform.t[0], transform.t[1],transform.t[2]);
+        dcRender_DrawMesh(&Render, MainLevel.Objects[i]->Mesh, &transform, &drawParams);       
+     
+    }
 
         dcRender_SwapBuffers(&Render);
-
-     
     }
 
     return 0;

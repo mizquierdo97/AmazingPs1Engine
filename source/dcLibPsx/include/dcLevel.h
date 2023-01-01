@@ -1,21 +1,25 @@
 #ifndef _DC_LEVEL_
 #define _DC_LEVEL_
-
+#include "dcRender.h"
 #include <stdlib.h>
 #include <libgte.h>
 #include <libgpu.h>
 #include <libgs.h>
 
-typedef struct
+typedef struct 
 {
     VECTOR Location;
-    VECTOR Rotation;
+    SVECTOR Rotation;
+    SDC_Mesh3D* Mesh;
+
 }SDC_Object;
+
 
 typedef struct 
 {
-
-SDC_Object *Objects[5];
+    SDC_Object** Objects;
+    int NumObjects;
+    int MaxObjects;
 
 // Back color  
 CVECTOR  AmbientColor;
@@ -28,7 +32,7 @@ MATRIX  RotLight, RotObject, WorldLightMatrix;
 // Each light points in the direction aligned with the axis, hence direction is in the same coordinate system as the PSX (see l.23-30 of this file)
 // Negative/positive value denotes light direction on corresponding axis
 // -4096 > Value < 4096 denotes reach/intensity of light source
-MATRIX LocalLightMatrix ;
+MATRIX LocalLightMatrix;
 // Local Color Matrix
 // Set color of each light source (L)
 // Value range : 0 > x < 4096
@@ -38,6 +42,7 @@ MATRIX ColorMatrix;
 
 void dcLevel_InitLight(SDC_Level* Level, CVECTOR* AmbientColor);
 void dcLevel_SetLight(SDC_Level* Level, int LightIndex, SVECTOR* LightDirection, SVECTOR* LightColor);
+void dcLevel_AddObject(SDC_Level* Level, SDC_Object* Object);
 
 
 #endif /* _DC_LEVEL_H */

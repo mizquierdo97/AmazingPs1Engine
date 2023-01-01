@@ -1,4 +1,5 @@
 #include "dcLevel.h"
+#include "dcRender.h"
 #include <malloc.h>
 #include <libetc.h>
 #include <stdio.h>
@@ -8,14 +9,6 @@
 void dcLevel_InitLight(SDC_Level *Level, CVECTOR *AmbientColor)
 {
     Level->AmbientColor = *AmbientColor;
-
-   /* Level->LocalLightMatrix = {
-        0,0,0,0,0,0,0,0,0,
-    };
-    Level->ColorMatrix = {
-        0,0,0,0,0,0,0,0,0,
-    };
-*/
 }
 
 void dcLevel_SetLight(SDC_Level* Level, int LightIndex, SVECTOR* LightDirection, SVECTOR* LightColor)
@@ -26,12 +19,20 @@ void dcLevel_SetLight(SDC_Level* Level, int LightIndex, SVECTOR* LightDirection,
         return;
     }
 
-    Level->LocalLightMatrix.m[0][LightIndex]= LightDirection->vx;
-    Level->LocalLightMatrix.m[1][LightIndex]= LightDirection->vx;
-    Level->LocalLightMatrix.m[2][LightIndex]= LightDirection->vx;
+    Level->LocalLightMatrix.m[LightIndex][0]= LightDirection->vx;
+    Level->LocalLightMatrix.m[LightIndex][1]= LightDirection->vy;
+    Level->LocalLightMatrix.m[LightIndex][2]= LightDirection->vz;
 
-    Level->ColorMatrix.m[LightIndex][0] = LightColor->vx;
-    Level->ColorMatrix.m[LightIndex][0] = LightColor->vy;
-    Level->ColorMatrix.m[LightIndex][0] = LightColor->vz;
+    Level->ColorMatrix.m[0][LightIndex] = LightColor->vx;
+    Level->ColorMatrix.m[1][LightIndex] = LightColor->vy;
+    Level->ColorMatrix.m[2][LightIndex] = LightColor->vz;
 
+}
+
+void dcLevel_AddObject(SDC_Level *Level, SDC_Object *Object)
+{
+    Level->Objects = malloc(Level->NumObjects + 1 * sizeof(SDC_Object));
+    Level->Objects[Level->NumObjects] = Object;
+    Level->NumObjects++;
+    Level->MaxObjects++;    
 }

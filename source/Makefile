@@ -11,6 +11,8 @@ SRCS = main.c \
 		dcLibPsx/src/dcRender.c\
 		dcLibPsx/src/dcCollision.c\
 		dcLibPsx/src/dcMisc.c\
+		dcLibPsx/src/dcLevel.c\
+		dcLibPsx/src/dcSprite.c\
 
 CPPFLAGS += -I../third_party/common
 CPPFLAGS += -I../third_party/psyq/include
