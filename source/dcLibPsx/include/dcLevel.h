@@ -17,7 +17,7 @@ typedef struct
 
 typedef struct 
 {
-    SDC_Object** Objects;
+    SDC_Object* Objects;
     int NumObjects;
     int MaxObjects;
 
@@ -42,7 +42,7 @@ MATRIX ColorMatrix;
 
 void dcLevel_InitLight(SDC_Level* Level, CVECTOR* AmbientColor);
 void dcLevel_SetLight(SDC_Level* Level, int LightIndex, SVECTOR* LightDirection, SVECTOR* LightColor);
-void dcLevel_AddObject(SDC_Level* Level, SDC_Object* Object);
+void dcLevel_AddObject(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR Location);
 
 
 #endif /* _DC_LEVEL_H */

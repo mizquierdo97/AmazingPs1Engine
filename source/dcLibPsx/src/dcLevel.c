@@ -29,10 +29,14 @@ void dcLevel_SetLight(SDC_Level* Level, int LightIndex, SVECTOR* LightDirection,
 
 }
 
-void dcLevel_AddObject(SDC_Level *Level, SDC_Object *Object)
+void dcLevel_AddObject(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR Location)
 {
-    Level->Objects = malloc(Level->NumObjects + 1 * sizeof(SDC_Object));
-    Level->Objects[Level->NumObjects] = Object;
+    SDC_Object Obj;
+    Obj.Location = Location;
+    Obj.Mesh = Mesh;
+
+    Level->Objects = realloc3(Level->Objects, (Level->NumObjects + 1) * sizeof(SDC_Object));
+    Level->Objects[Level->NumObjects] = Obj;
     Level->NumObjects++;
-    Level->MaxObjects++;    
+    Level->MaxObjects++;   
 }
