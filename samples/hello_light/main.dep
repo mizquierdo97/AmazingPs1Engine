@@ -1,0 +1,4 @@
+main.o: main.c ../../third_party/psyq/include/libgte.h \
+ ../../third_party/psyq/include/libgpu.h \
+ ../../third_party/psyq/include/libetc.h \
+ ../../third_party/psyq/include/stdio.h cube.c
