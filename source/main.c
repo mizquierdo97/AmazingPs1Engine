@@ -12,6 +12,7 @@
 #include "dcCamera.h"
 #include "dcRender.h"
 #include "dcLevel.h"
+#include "character.h"
 #include "dcMemory.h"
 #include "dcMisc.h"
 #include "dcSprite.h"
@@ -19,6 +20,7 @@
 #include "dcRender.h"
 #include "../third_party/modplayer/modplayer.h"
 #include "meshes/crash.h"
+#include "meshes/Box001.h"
 
 #define CUBESIZE 196 
 
@@ -30,6 +32,7 @@ SDC_Level MainLevel;
 // Display and draw environments, double buffered
 
 extern unsigned long _binary_textures_colorpallete_tim_start[];
+extern unsigned long _binary_textures_smile_tim_start[];
 
 void InitGame()
 {
@@ -50,9 +53,9 @@ void InitLevel()
 {
 
     //Camera Init
-    long CameraDistance = 400;
-    dcCamera_SetCameraPosition(&Camera, 0, 500, CameraDistance);
-    VECTOR LookAt = {0,-0, 0};
+    long CameraDistance = 200;
+    dcCamera_SetCameraPosition(&Camera, 0, 0, CameraDistance);
+    VECTOR LookAt = {0,0, 0};
     dcCamera_LookAt(&Camera, &LookAt);
 
     CVECTOR  AmbientColor = {50, 50, 50, 0};
@@ -75,25 +78,48 @@ void InitLevel()
     // Set Color matrix
     SetColorMatrix(&MainLevel.ColorMatrix);
 
-    //SDC_Mesh3D* SphereMesh = dcMisc_generateSphereMesh(CUBESIZE, 3, 3);   
     SDC_Mesh3D* TeapotMesh = &crash_Mesh;
 
 
+    TIM_IMAGE* tim_crash = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));    
     TIM_IMAGE* tim_smile = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
+    SDC_DrawParams DrawParamsCrash = {
+        .tim = tim_crash,
+        .constantColor = {255, 255, 255},
+        .bLighting = 1,
+        .bUseConstantColor = 1
+    };
     SDC_DrawParams DrawParams = {
         .tim = tim_smile,
         .constantColor = {255, 255, 255},
         .bLighting = 1,
         .bUseConstantColor = 1
     };
+    SDC_DrawParams* DrawParamsCrashPtr = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
+    *DrawParamsCrashPtr = DrawParamsCrash;
+    dcRender_LoadTexture(tim_crash, _binary_textures_colorpallete_tim_start);
+
+    dcRender_LoadTexture(tim_smile, _binary_textures_smile_tim_start);
     SDC_DrawParams* DrawParamsPtr = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
     *DrawParamsPtr = DrawParams;
-    dcRender_LoadTexture(tim_smile, _binary_textures_colorpallete_tim_start);    
-
-    Render.DrawParameters = DrawParams;
 
     VECTOR SphereLocation = {0,0, 0, 0};
-    dcLevel_AddObject(&MainLevel, TeapotMesh, &SphereLocation, DrawParamsPtr);
+ VECTOR CharInitialLocation = {0,-100, 0, 0};
+    dcLevel_AddObject(&MainLevel, &Box001_Mesh, &SphereLocation, DrawParamsPtr);
+    dcLevel_InitCharacter(&MainLevel, TeapotMesh, &CharInitialLocation, DrawParamsCrashPtr);
+    
+    SDC_DrawParams DrawParams2 = {
+        .tim = tim_smile,
+        .constantColor = {255, 255, 255},
+        .bLighting = 1,
+        .bUseConstantColor = 1
+    };
+    SDC_DrawParams* DrawParamsPtr2 = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
+    *DrawParamsPtr2 = DrawParams2;
+
+    VECTOR SphereLocation2 = {200,0, 0, 0};
+    dcLevel_AddObject(&MainLevel, &Box001_Mesh, &SphereLocation2, DrawParamsPtr2);
+
 }
        
 
@@ -101,13 +127,23 @@ void InitLevel()
 void Display()
 {
     MATRIX Transform;
+
+    UpdateCharacter(&MainLevel);
+    dcCamera_SetCameraPosition(&Camera, MainLevel.Character.Location.vx , MainLevel.Character.Location.vy + 500, MainLevel.Character.Location.vz + 400);
+    VECTOR LookAt =  MainLevel.Character.Location;
+    dcCamera_LookAt(&Camera, &LookAt);
+    
+    dcRender_PreDrawMesh(&MainLevel, &Camera, &MainLevel.Character.Location, &MainLevel.Character.Rotation, &Transform);
+    dcRender_DrawMesh(&Render, MainLevel.Character.Mesh, &Transform, MainLevel.Character.DrawParams);
+//
    for(int i = 0; i < MainLevel.NumObjects; i++)
     {        
         //Logic Update HERE
         //
         //-----------------
+        dcRender_PreDrawMesh(&MainLevel, &Camera, &MainLevel.Objects[i].Location, &MainLevel.Objects[i].Rotation, &Transform);
 
-        RotMatrix_gte(&MainLevel.LightAngle, &MainLevel.RotLight);
+        /*  RotMatrix_gte(&MainLevel.LightAngle, &MainLevel.RotLight);
         RotMatrix_gte(&MainLevel.Objects[i].Rotation, &MainLevel.RotObject);  
         // RotMatrix cube * RotMatrix light
         MulMatrix0(&MainLevel.RotObject, &MainLevel.RotLight, &MainLevel.RotLight);
@@ -117,10 +153,10 @@ void Display()
         SetLightMatrix(&MainLevel.WorldLightMatrix);
 
         RotMatrix(&MainLevel.Objects[i].Rotation, &Transform);
-        TransMatrix(&Transform, & MainLevel.Objects[i].Location);
+        TransMatrix(&Transform, &MainLevel.Objects[i].Location);
         dcCamera_ApplyCameraTransform(&Camera, &Transform, &Transform);
-
-        dcRender_DrawMesh(&Render, MainLevel.Objects[i].Mesh, &Transform, MainLevel.Objects[i].DrawParams);     
+*/
+        dcRender_DrawMesh(&Render, MainLevel.Objects[i].Mesh, &Transform, MainLevel.Objects[i].DrawParams);
     }
 
     dcRender_SwapBuffers(&Render);
@@ -128,67 +164,6 @@ void Display()
 
 void Input()
 {
-       for(int i = 0; i < MainLevel.NumObjects; i++)
-    {        
-    u_long PadState = PadRead(0);
-
-    SVECTOR IncrementalPosition = {0,0,0};
-    if( _PAD(0,PADLup ) & PadState )
-    {
-        IncrementalPosition.vz -=10;
-    }
-    if( _PAD(0,PADLdown ) & PadState )
-    {
-        IncrementalPosition.vz +=10;
-    }
-    if( _PAD(0,PADLright ) & PadState )
-    {
-        IncrementalPosition.vx +=10;
-    }
-    if( _PAD(0,PADLleft ) & PadState )
-    {
-        IncrementalPosition.vx -=10;
-    }
-    if( _PAD(0,PADRup ) & PadState )
-    {
-        printf("Triangle\n");
-    }
-    if( _PAD(0,PADRdown ) & PadState )
-    {
-        printf("Cross\n");
-    }
-    if( _PAD(0,PADRright ) & PadState )
-    {
-        printf("Circle\n");
-    }
-    if( _PAD(0,PADRleft ) & PadState )
-    {
-        printf("Square\n");
-    }
-    if(IncrementalPosition.vx != 0 || IncrementalPosition.vz != 0)
-    {
-    SVECTOR WorldForward = {ONE,0,0};
-    SVECTOR Dir;    
-    VectorNormalSS(&IncrementalPosition, &Dir);
-    SVECTOR Diff = {Dir.vx -  MainLevel.Objects[i].Direction.vx,Dir.vy -  MainLevel.Objects[i].Direction.vy,Dir.vz -  MainLevel.Objects[i].Direction.vz};
-    int LerpSpeed = 8;
-    SVECTOR DIffDivided = {Diff.vx / LerpSpeed, Diff.vy / LerpSpeed, Diff.vz / LerpSpeed};
-    SVECTOR Summ = {MainLevel.Objects[i].Direction.vx + DIffDivided.vx,MainLevel.Objects[i].Direction.vy + DIffDivided.vy,MainLevel.Objects[i].Direction.vz + DIffDivided.vz};
-    MainLevel.Objects[i].Direction =  Summ;
-
-    long atan2 = ratan2(MainLevel.Objects[i].Direction.vx, MainLevel.Objects[i].Direction.vz);
-    int dot = dcMath_DotProduct(&WorldForward, &MainLevel.Objects[i].Direction);
-
-    MainLevel.Objects[i].Rotation.vy = atan2;
-    MainLevel.Objects[i].Location.vx += IncrementalPosition.vx;    
-    MainLevel.Objects[i].Location.vz += IncrementalPosition.vz;
-
-    dcCamera_SetCameraPosition(&Camera, MainLevel.Objects[i].Location.vx , MainLevel.Objects[i].Location.vy + 500, MainLevel.Objects[i].Location.vz + 400);
-    VECTOR LookAt =  MainLevel.Objects[i].Location;
-    dcCamera_LookAt(&Camera, &LookAt);
-
-    }
-    }
 }
 
 int main(void) 

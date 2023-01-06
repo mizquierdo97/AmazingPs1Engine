@@ -4,7 +4,8 @@
         "dcrender.h": "c",
         "libgte.h": "c",
         "character.h": "c",
-        "dcmath.h": "c"
+        "dcmath.h": "c",
+        "dclevel.h": "c"
     },
     "makefile.launchConfigurations": [
         {

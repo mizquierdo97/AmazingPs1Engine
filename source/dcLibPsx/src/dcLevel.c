@@ -46,3 +46,15 @@ void dcLevel_AddObject(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC
     Level->NumObjects++;
     Level->MaxObjects++;   
 }
+
+void dcLevel_InitCharacter(SDC_Level *Level, SDC_Mesh3D *Mesh, VECTOR *Location, SDC_DrawParams *DrawParams)
+{
+    SDC_Character NewCharacter;
+    NewCharacter.Location = *Location; //<----- to Transform
+    SVECTOR Rot = {0,0,0};
+    NewCharacter.Rotation =Rot;
+    NewCharacter.Mesh = Mesh;
+    NewCharacter.DrawParams = DrawParams;
+
+    Level->Character = NewCharacter;
+}

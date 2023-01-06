@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <libgte.h>
 
-typedef struct {
+typedef struct SDC_Camera{
     VECTOR  position;
     VECTOR  viewScale;
     MATRIX  viewMatrix;

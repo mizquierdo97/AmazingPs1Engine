@@ -6,19 +6,35 @@
 #include <libgpu.h>
 #include <libgs.h>
 
+
 typedef struct 
 {
     VECTOR Location;
     SVECTOR Rotation;
     SDC_Mesh3D* Mesh;
     SDC_DrawParams* DrawParams;
-    SVECTOR Direction;
 }SDC_Object;
 
 
 typedef struct 
 {
+    VECTOR Location;
+    SVECTOR Rotation;
+    SDC_Mesh3D* Mesh;
+    SVECTOR Direction;
+    SDC_DrawParams* DrawParams;
+    //TEXTURE
+    //Life
+    //Speed
+    //.
+    //.
+    //.
+}SDC_Character;
+
+typedef struct SDC_Level
+{
     SDC_Object* Objects;
+    SDC_Character Character;
     int NumObjects;
     int MaxObjects;
 
@@ -44,6 +60,8 @@ MATRIX ColorMatrix;
 void dcLevel_InitLight(SDC_Level* Level, CVECTOR* AmbientColor);
 void dcLevel_SetLight(SDC_Level* Level, int LightIndex, SVECTOR* LightDirection, SVECTOR* LightColor);
 void dcLevel_AddObject(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC_DrawParams* DrawParams);
+
+void dcLevel_InitCharacter(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC_DrawParams* DrawParams);
 
 
 #endif /* _DC_LEVEL_H */

@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <assert.h>
 #include <memory.h>
+#include "dcCamera.h"
+#include "dcLevel.h"
 
 int totalPrimitives = 0;
 
@@ -75,7 +77,7 @@ void dcRender_Init(SDC_Render* render, int width, int height, CVECTOR bgColor, i
     SetVideoMode(mode==RENDER_MODE_NTCS?MODE_NTSC:MODE_PAL);
 
     //Debug font (to remove)
-    FntLoad(960, 256);
+    FntLoad(960, 128);
     SetDumpFnt(FntOpen(16, 16, 320, 64, 0, 512));
         
     PutDispEnv( &render->displayEnvironment[render->doubleBufferIndex] );
@@ -140,6 +142,8 @@ void dcRender_LoadTexture(TIM_IMAGE* tim, u_long* texture) {
     ReadTIM(tim);                                // This read the header of the TIM data and sets the corresponding members of the TIM_IMAGE structure
 
     LoadImage( tim->prect, tim->paddr );        // Transfer the data from memory to VRAM at position prect.x, prect.y
+
+    printf("%i -- %i\n", tim->prect->x, tim->prect->y);
     if( tim->mode & 0x8 ) {                     // check 4th bit       // If 4th bit == 1, TIM has a CLUT
         LoadImage( tim->crect, tim->caddr );    // Load it to VRAM at position crect.x, crect.y
     }
@@ -345,13 +349,17 @@ void dcRender_DrawMesh(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform,
                 SDC_VertexTextured *vertexs = (SDC_VertexTextured *)mesh->vertexs;
 
                 SetPolyFT3(polyFT3);
-                setRGB0(polyFT3, curr_color.r, curr_color.g, curr_color.b);
-                setUV3(polyFT3, vertexs[index0].u , vertexs[index0].v, vertexs[index1].u , vertexs[index1].v, vertexs[index2].u , vertexs[index2].v);
                 if(drawParams && drawParams->tim) {
-                    polyFT3->tpage = getTPage(drawParams->tim->mode, 0, drawParams->tim->prect->x, drawParams->tim->prect->y); /*texture page*/
+                    
+                    u_long Test =  getTPage(drawParams->tim->mode, 0, drawParams->tim->prect->x, drawParams->tim->prect->y);
+                    
+                    printf("%i --- %i --- %i --- %i\n", Test, drawParams->tim->mode, drawParams->tim->prect->x, drawParams->tim->prect->y);
+                    polyFT3->tpage = Test; /*texture page*/
                     polyFT3->clut = GetClut (drawParams->tim->crect->x, drawParams->tim->crect->y); /*texture CLUT*/
                 }
 
+                setRGB0(polyFT3, curr_color.r, curr_color.g, curr_color.b);
+                setUV3(polyFT3, vertexs[index0].u , vertexs[index0].v, vertexs[index1].u , vertexs[index1].v, vertexs[index2].u , vertexs[index2].v);
                 nclip = RotAverageNclip3(&vertexs[index0].position, &vertexs[index1].position, &vertexs[index2].position,
                                         (long *)&polyFT3->x0, (long *)&polyFT3->x1, (long *)&polyFT3->x2, &p, &otz, &flg);
                 if (nclip <= 0) continue;
@@ -389,6 +397,15 @@ void dcRender_DrawMesh(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform,
                 SDC_VertexTexturedNormal *vertexs = (SDC_VertexTexturedNormal *)mesh->vertexs;
                 SetPolyGT3(polyGT3);
 
+                if(drawParams && drawParams->tim) {
+                    
+                    u_long Test =  getTPage(drawParams->tim->mode, 0, drawParams->tim->prect->x, drawParams->tim->prect->y);
+                    //printf("%i\n", Test);
+                    //printf("%i --- %i --- %i --- %i\n", Test, drawParams->tim->mode, drawParams->tim->prect->x, drawParams->tim->prect->y);
+                    polyGT3->tpage = Test;/*texture page*/
+                    setClut(polyGT3,drawParams->tim->crect->x, drawParams->tim->crect->y);
+                   // polyGT3->clut = GetClut (; /*texture CLUT*/
+                }
                 nclip = RotAverageNclip3(&vertexs[index0].position, &vertexs[index1].position, &vertexs[index2].position,
                                         (long *)&polyGT3->x0, (long *)&polyGT3->x1, (long *)&polyGT3->x2, &p, &otz, &flg);
                 if (nclip <= 0) continue;
@@ -412,12 +429,8 @@ void dcRender_DrawMesh(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform,
                     setRGB1(polyGT3, curr_color.r, curr_color.g, curr_color.b);
                     setRGB2(polyGT3, curr_color.r, curr_color.g, curr_color.b);
                 }
-
                 setUV3(polyGT3, vertexs[index0].u , vertexs[index0].v, vertexs[index1].u , vertexs[index1].v, vertexs[index2].u , vertexs[index2].v);
-                if(drawParams && drawParams->tim) {
-                    polyGT3->tpage = getTPage(drawParams->tim->mode, 0, drawParams->tim->prect->x, drawParams->tim->prect->y); /*texture page*/
-                    polyGT3->clut = GetClut (drawParams->tim->crect->x, drawParams->tim->crect->y); /*texture CLUT*/
-                }
+
 
 				addPrim(&orderingTable[otz], polyGT3);
                 _dcRender_IncPrimitive(render, sizeof(POLY_GT3));
@@ -469,8 +482,27 @@ void dcRender_DrawLine(SDC_Render* render, SVECTOR* v0, SVECTOR* v1, MATRIX* tra
 
         setRGB0(lineF2, curr_color.r, curr_color.g, curr_color.b);
         addPrim(orderingTable[otz], lineF2);
-        _dcRender_IncPrimitive(render, sizeof(LINE_F2));
+        _dcRender_IncPrimitive(render, sizeof(LINE_F2)); 
     }
+}
+
+
+void dcRender_PreDrawMesh(SDC_Level* Level, SDC_Camera* Camera, VECTOR *Location, SVECTOR *Rotation, MATRIX *Transform)
+{
+
+        RotMatrix_gte(&Level->LightAngle, &Level->RotLight);
+        RotMatrix_gte(Rotation, &Level->RotObject);  
+        // RotMatrix cube * RotMatrix light
+        MulMatrix0(&Level->RotObject, &Level->RotLight, &Level->RotLight);
+        // Light Matrix * RotMatrix light 
+        MulMatrix0(&Level->LocalLightMatrix, &Level->RotLight, &Level->WorldLightMatrix);
+        // Set new light matrix 
+        SetLightMatrix(&Level->WorldLightMatrix);
+
+        RotMatrix(Rotation, Transform);
+        TransMatrix(Transform, Location);
+        dcCamera_ApplyCameraTransform(Camera, Transform, Transform);
+
 }
 
 //#pragma GCC pop_options
