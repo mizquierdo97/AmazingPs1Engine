@@ -11,7 +11,8 @@ typedef struct
     VECTOR Location;
     SVECTOR Rotation;
     SDC_Mesh3D* Mesh;
-
+    SDC_DrawParams* DrawParams;
+    SVECTOR Direction;
 }SDC_Object;
 
 
@@ -42,7 +43,7 @@ MATRIX ColorMatrix;
 
 void dcLevel_InitLight(SDC_Level* Level, CVECTOR* AmbientColor);
 void dcLevel_SetLight(SDC_Level* Level, int LightIndex, SVECTOR* LightDirection, SVECTOR* LightColor);
-void dcLevel_AddObject(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR Location);
+void dcLevel_AddObject(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC_DrawParams* DrawParams);
 
 
 #endif /* _DC_LEVEL_H */

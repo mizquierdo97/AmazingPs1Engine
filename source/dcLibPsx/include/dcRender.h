@@ -6,6 +6,17 @@
 #include <libgpu.h>
 #include <libgs.h>
 
+typedef struct
+{
+	TIM_IMAGE* tim;
+    CVECTOR    constantColor;
+    short int  backFaceCullMode; // 0: no culling, 1: cull backface, -1: cull front face
+    u_short    bLighting : 1;
+    u_short    bWireFrame : 1;
+    u_short    bUseConstantColor : 1;
+
+} SDC_DrawParams;
+
 typedef struct {
 
     int       width;
@@ -27,6 +38,7 @@ typedef struct {
     MATRIX     lightDirMatrix;
     MATRIX     lightColorMatrix;
     CVECTOR    ambientColor;
+    SDC_DrawParams DrawParameters;
 
 } SDC_Render;
 
@@ -96,16 +108,6 @@ typedef struct {
     
 } SDC_Mesh3D;
 
-typedef struct
-{
-	TIM_IMAGE* tim;
-    CVECTOR    constantColor;
-    short int  backFaceCullMode; // 0: no culling, 1: cull backface, -1: cull front face
-    u_short    bLighting : 1;
-    u_short    bWireFrame : 1;
-    u_short    bUseConstantColor : 1;
-
-} SDC_DrawParams;
 
 void dcRender_Init(SDC_Render* render, int width, int height, CVECTOR bgColor, int orderingTableLength/* = 4096*/, int bytesPrimitives/* = 8192*/, EDC_Mode mode );
 void dcRender_SwapBuffers(SDC_Render* render);

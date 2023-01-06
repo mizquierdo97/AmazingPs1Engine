@@ -1,7 +1,10 @@
 {
     "files.associations": {
         "MAIN.C": "cpp",
-        "dcrender.h": "c"
+        "dcrender.h": "c",
+        "libgte.h": "c",
+        "character.h": "c",
+        "dcmath.h": "c"
     },
     "makefile.launchConfigurations": [
         {

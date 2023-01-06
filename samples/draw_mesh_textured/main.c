@@ -14,13 +14,13 @@
 #include "dcMemory.h"
 
 #include "Teapot001.h"
-#include "Box001.h"
 
 extern unsigned long _binary_smile_tim_start[];
 
 int main(void) 
 {
     dcMemory_Init();
+    
 
     InitGeom();
     SDC_Render render;
@@ -40,7 +40,6 @@ int main(void)
     dcRender_LoadTexture(&tim_smile, _binary_smile_tim_start);  
 
     SVECTOR rotation = {0};
-    VECTOR translationTeapot = {150, 0, 0, 0}; 
     VECTOR translationCube = {-150, 0, 0, 0}; 
     MATRIX transform;
 

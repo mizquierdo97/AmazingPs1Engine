@@ -11,6 +11,7 @@ void dcLevel_InitLight(SDC_Level *Level, CVECTOR *AmbientColor)
     Level->AmbientColor = *AmbientColor;
 }
 
+//Maybe we should use the Render SetLightFunction, but this way maybe we can store more easy the light info of every level (?)
 void dcLevel_SetLight(SDC_Level* Level, int LightIndex, SVECTOR* LightDirection, SVECTOR* LightColor)
 {
     if(LightIndex >= 3)
@@ -29,13 +30,18 @@ void dcLevel_SetLight(SDC_Level* Level, int LightIndex, SVECTOR* LightDirection,
 
 }
 
-void dcLevel_AddObject(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR Location)
+void dcLevel_AddObject(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC_DrawParams* DrawParams)
 {
     SDC_Object Obj;
-    Obj.Location = Location;
+    Obj.Location = *Location; //<----- to Transform
+    SVECTOR Rot = {0,0,0};
+    Obj.Rotation =Rot;
     Obj.Mesh = Mesh;
+    Obj.DrawParams = DrawParams;
 
+    //Malloc for every object? or with MaxArray size?
     Level->Objects = realloc3(Level->Objects, (Level->NumObjects + 1) * sizeof(SDC_Object));
+
     Level->Objects[Level->NumObjects] = Obj;
     Level->NumObjects++;
     Level->MaxObjects++;   

@@ -82,6 +82,7 @@ void dcRender_Init(SDC_Render* render, int width, int height, CVECTOR bgColor, i
     PutDrawEnv( &render->drawEnvironment[render->doubleBufferIndex] );
 
     dcRender_ResetLights(render);
+   
 }
 
 void dcRender_ResetLights(SDC_Render* render)
