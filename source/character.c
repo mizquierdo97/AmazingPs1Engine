@@ -2,13 +2,6 @@
 
 void UpdateCharacter(SDC_Level *Level)
 {
-    
-    //Get input
-
-    //Do stuff with input
-
-    //DRAW (Here or with other objects?)
-
     SDC_Character* Character = &Level->Character;
        
     u_long PadState = PadRead(0);
@@ -44,6 +37,7 @@ void UpdateCharacter(SDC_Level *Level)
     }
     if(IncrementalPosition.vx != 0 || IncrementalPosition.vz != 0)
     {
+        
     SVECTOR Dir;    
     VectorNormalSS(&IncrementalPosition, &Dir);
     SVECTOR Diff = {Dir.vx -  Character->Direction.vx,Dir.vy -  Character->Direction.vy,Dir.vz -  Character->Direction.vz};

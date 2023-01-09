@@ -43,12 +43,13 @@ void InitGame()
     int  width = 640;
     int  height = 240;
 
-     CVECTOR bgColor = {60, 120, 120};
+    CVECTOR bgColor = {60, 120, 120};        
     dcRender_Init(&Render, width, height, bgColor, 4096 * 4, 8192 * 10, RENDER_MODE_PAL);
     dcCamera_SetScreenResolution(&Camera, width, height);
 
 }
 
+//This should go to a separate .h so we can modify the level without having conflicts
 void InitLevel()
 {
 
@@ -75,14 +76,12 @@ void InitLevel()
     //SVECTOR LightColor3 = {ONE, 0, ONE};
     //dcLevel_SetLight(&MainLevel, 2, &LightDirection3, &LightColor3);
 
-    // Set Color matrix
     SetColorMatrix(&MainLevel.ColorMatrix);
-
-    SDC_Mesh3D* TeapotMesh = &crash_Mesh;
-
 
     TIM_IMAGE* tim_crash = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));    
     TIM_IMAGE* tim_smile = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
+
+    //We can move this structure initialization to a function
     SDC_DrawParams DrawParamsCrash = {
         .tim = tim_crash,
         .constantColor = {255, 255, 255},
@@ -95,39 +94,29 @@ void InitLevel()
         .bLighting = 1,
         .bUseConstantColor = 1
     };
+
     SDC_DrawParams* DrawParamsCrashPtr = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
     *DrawParamsCrashPtr = DrawParamsCrash;
-    dcRender_LoadTexture(tim_crash, _binary_textures_colorpallete_tim_start);
-
-    dcRender_LoadTexture(tim_smile, _binary_textures_smile_tim_start);
     SDC_DrawParams* DrawParamsPtr = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
     *DrawParamsPtr = DrawParams;
 
-    VECTOR SphereLocation = {0,0, 0, 0};
- VECTOR CharInitialLocation = {0,-100, 0, 0};
-    dcLevel_AddObject(&MainLevel, &Box001_Mesh, &SphereLocation, DrawParamsPtr);
-    dcLevel_InitCharacter(&MainLevel, TeapotMesh, &CharInitialLocation, DrawParamsCrashPtr);
+    dcRender_LoadTexture(tim_crash, _binary_textures_colorpallete_tim_start);
+    dcRender_LoadTexture(tim_smile, _binary_textures_smile_tim_start);
+
+    VECTOR BoxLocarion = {0,0, 0, 0};
+    VECTOR BoxLocation2 = {200,0, 0, 0};
+    VECTOR CharacterInitialLocation = {0,-100, 0, 0};
     
-    SDC_DrawParams DrawParams2 = {
-        .tim = tim_smile,
-        .constantColor = {255, 255, 255},
-        .bLighting = 1,
-        .bUseConstantColor = 1
-    };
-    SDC_DrawParams* DrawParamsPtr2 = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
-    *DrawParamsPtr2 = DrawParams2;
-
-    VECTOR SphereLocation2 = {200,0, 0, 0};
-    dcLevel_AddObject(&MainLevel, &Box001_Mesh, &SphereLocation2, DrawParamsPtr2);
-
-}
-       
-
+    dcLevel_AddObject(&MainLevel, &Box001_Mesh, &BoxLocarion, DrawParamsPtr);
+    dcLevel_AddObject(&MainLevel, &Box001_Mesh, &BoxLocation2, DrawParamsPtr);
+    dcLevel_InitCharacter(&MainLevel, &crash_Mesh, &CharacterInitialLocation, DrawParamsCrashPtr);
+}       
 
 void Display()
 {
     MATRIX Transform;
 
+    //DrawCharacter
     UpdateCharacter(&MainLevel);
     dcCamera_SetCameraPosition(&Camera, MainLevel.Character.Location.vx , MainLevel.Character.Location.vy + 500, MainLevel.Character.Location.vz + 400);
     VECTOR LookAt =  MainLevel.Character.Location;
@@ -135,27 +124,15 @@ void Display()
     
     dcRender_PreDrawMesh(&MainLevel, &Camera, &MainLevel.Character.Location, &MainLevel.Character.Rotation, &Transform);
     dcRender_DrawMesh(&Render, MainLevel.Character.Mesh, &Transform, MainLevel.Character.DrawParams);
-//
+
+
+    //Draw Objects
    for(int i = 0; i < MainLevel.NumObjects; i++)
-    {        
-        //Logic Update HERE
-        //
-        //-----------------
+    {
+        /*
+        UPDATE OBJECTS?¿?¿
+        */
         dcRender_PreDrawMesh(&MainLevel, &Camera, &MainLevel.Objects[i].Location, &MainLevel.Objects[i].Rotation, &Transform);
-
-        /*  RotMatrix_gte(&MainLevel.LightAngle, &MainLevel.RotLight);
-        RotMatrix_gte(&MainLevel.Objects[i].Rotation, &MainLevel.RotObject);  
-        // RotMatrix cube * RotMatrix light
-        MulMatrix0(&MainLevel.RotObject, &MainLevel.RotLight, &MainLevel.RotLight);
-        // Light Matrix * RotMatrix light 
-        MulMatrix0(&MainLevel.LocalLightMatrix, &MainLevel.RotLight, &MainLevel.WorldLightMatrix);
-        // Set new light matrix 
-        SetLightMatrix(&MainLevel.WorldLightMatrix);
-
-        RotMatrix(&MainLevel.Objects[i].Rotation, &Transform);
-        TransMatrix(&Transform, &MainLevel.Objects[i].Location);
-        dcCamera_ApplyCameraTransform(&Camera, &Transform, &Transform);
-*/
         dcRender_DrawMesh(&Render, MainLevel.Objects[i].Mesh, &Transform, MainLevel.Objects[i].DrawParams);
     }
 
@@ -164,6 +141,7 @@ void Display()
 
 void Input()
 {
+    // ??¿¿???¿?¿
 }
 
 int main(void) 
