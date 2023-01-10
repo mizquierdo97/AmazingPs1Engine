@@ -1,0 +1,14 @@
+{
+  "version": "12707.20221226.8.x64",
+  "changeset": "63ff6dde4cf800f8f8de6eccaa295e3edf9b7b6a",
+  "timestamp": 1672097520,
+  "channel": "dev",
+  "updateInfo": [
+    {
+      "channel": "dev",
+      "method": "appcenter",
+      "updateCatalog": "https://install.appcenter.ms/api/v0.1/apps/grumpycoders/pcsx-redux-win64/distribution_groups/public/public_releases",
+      "updateInfoBase": "https://install.appcenter.ms/api/v0.1/apps/grumpycoders/pcsx-redux-win64/distribution_groups/public/releases/"
+    }
+  ]
+}
