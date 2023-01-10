@@ -143,7 +143,6 @@ void dcRender_LoadTexture(TIM_IMAGE* tim, u_long* texture) {
 
     LoadImage( tim->prect, tim->paddr );        // Transfer the data from memory to VRAM at position prect.x, prect.y
 
-    printf("%i -- %i\n", tim->prect->x, tim->prect->y);
     if( tim->mode & 0x8 ) {                     // check 4th bit       // If 4th bit == 1, TIM has a CLUT
         LoadImage( tim->crect, tim->caddr );    // Load it to VRAM at position crect.x, crect.y
     }
@@ -353,7 +352,6 @@ void dcRender_DrawMesh(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform,
                     
                     u_long Test =  getTPage(drawParams->tim->mode, 0, drawParams->tim->prect->x, drawParams->tim->prect->y);
                     
-                    printf("%i --- %i --- %i --- %i\n", Test, drawParams->tim->mode, drawParams->tim->prect->x, drawParams->tim->prect->y);
                     polyFT3->tpage = Test; /*texture page*/
                     polyFT3->clut = GetClut (drawParams->tim->crect->x, drawParams->tim->crect->y); /*texture CLUT*/
                 }
@@ -400,8 +398,6 @@ void dcRender_DrawMesh(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform,
                 if(drawParams && drawParams->tim) {
                     
                     u_long Test =  getTPage(drawParams->tim->mode, 0, drawParams->tim->prect->x, drawParams->tim->prect->y);
-                    //printf("%i\n", Test);
-                    //printf("%i --- %i --- %i --- %i\n", Test, drawParams->tim->mode, drawParams->tim->prect->x, drawParams->tim->prect->y);
                     polyGT3->tpage = Test;/*texture page*/
                     setClut(polyGT3,drawParams->tim->crect->x, drawParams->tim->crect->y);
                    // polyGT3->clut = GetClut (; /*texture CLUT*/
@@ -499,8 +495,6 @@ void dcRender_PreDrawMesh(SDC_Level* Level, SDC_Camera* Camera, VECTOR *Location
         // Set new light matrix 
         SetLightMatrix(&Level->WorldLightMatrix);
 
-        RotMatrix(Rotation, Transform);
-        TransMatrix(Transform, Location);
         dcCamera_ApplyCameraTransform(Camera, Transform, Transform);
 
 }

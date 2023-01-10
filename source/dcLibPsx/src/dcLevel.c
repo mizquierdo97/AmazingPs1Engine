@@ -30,21 +30,23 @@ void dcLevel_SetLight(SDC_Level* Level, int LightIndex, SVECTOR* LightDirection,
 
 }
 
-void dcLevel_AddObject(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC_DrawParams* DrawParams)
+SDC_Object* dcLevel_AddObject(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC_DrawParams* DrawParams, SDC_Object* Parent)
 {
-    SDC_Object Obj;
-    Obj.Location = *Location; //<----- to Transform
+    SDC_Object* Obj = malloc3(sizeof(SDC_Object));
+    Obj->Location = *Location; //<----- to Transform
     SVECTOR Rot = {0,0,0};
-    Obj.Rotation =Rot;
-    Obj.Mesh = Mesh;
-    Obj.DrawParams = DrawParams;
-
+    Obj->Rotation =Rot;
+    Obj->Mesh = Mesh;
+    Obj->DrawParams = DrawParams;
+    Obj->Parent = Parent;
+    
     //Malloc for every object? or with MaxArray size?
-    Level->Objects = realloc3(Level->Objects, (Level->NumObjects + 1) * sizeof(SDC_Object));
+    Level->Objects = realloc3(Level->Objects, (Level->NumObjects + 1) * sizeof(SDC_Object*));
 
-    Level->Objects[Level->NumObjects] = Obj;
+    Level->Objects[Level->NumObjects] = Obj;    
     Level->NumObjects++;
     Level->MaxObjects++;   
+    return Obj;
 }
 
 void dcLevel_InitCharacter(SDC_Level *Level, SDC_Mesh3D *Mesh, VECTOR *Location, SDC_DrawParams *DrawParams)
@@ -57,4 +59,20 @@ void dcLevel_InitCharacter(SDC_Level *Level, SDC_Mesh3D *Mesh, VECTOR *Location,
     NewCharacter.DrawParams = DrawParams;
 
     Level->Character = NewCharacter;
+}
+
+void GetParentTransform(SDC_Object* Object, MATRIX *Transform, MATRIX *OutTransform)
+{ 
+    if(Object->Parent != NULL)
+    {
+        GetParentTransform(Object->Parent, Transform, OutTransform);        
+        printf("%i --- %i --- %i \n",Object->Location.vx, OutTransform->t[0]);
+        CompMatrix(OutTransform, Transform, OutTransform);        
+        printf("%i --- %i --- %i\n",  Transform->t[0], OutTransform->t[0]);
+    }
+    else
+    {
+        RotMatrix(&Object->Rotation, OutTransform);
+        TransMatrix(OutTransform, &Object->Location);
+    }
 }

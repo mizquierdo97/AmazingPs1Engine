@@ -54,7 +54,7 @@ void InitLevel()
 {
 
     //Camera Init
-    long CameraDistance = 200;
+    long CameraDistance = 500;
     dcCamera_SetCameraPosition(&Camera, 0, 0, CameraDistance);
     VECTOR LookAt = {0,0, 0};
     dcCamera_LookAt(&Camera, &LookAt);
@@ -103,12 +103,12 @@ void InitLevel()
     dcRender_LoadTexture(tim_crash, _binary_textures_colorpallete_tim_start);
     dcRender_LoadTexture(tim_smile, _binary_textures_smile_tim_start);
 
-    VECTOR BoxLocarion = {0,0, 0, 0};
+    VECTOR BoxLocarion = {000,0, 0, 0};
     VECTOR BoxLocation2 = {200,0, 0, 0};
     VECTOR CharacterInitialLocation = {0,-100, 0, 0};
     
-    dcLevel_AddObject(&MainLevel, &Box001_Mesh, &BoxLocarion, DrawParamsPtr);
-    dcLevel_AddObject(&MainLevel, &Box001_Mesh, &BoxLocation2, DrawParamsPtr);
+    SDC_Object* Parent = dcLevel_AddObject(&MainLevel, &Box001_Mesh, &BoxLocarion, DrawParamsPtr, NULL);
+    dcLevel_AddObject(&MainLevel, &Box001_Mesh, &BoxLocation2, DrawParamsPtr, Parent);    
     dcLevel_InitCharacter(&MainLevel, &crash_Mesh, &CharacterInitialLocation, DrawParamsCrashPtr);
 }       
 
@@ -117,14 +117,16 @@ void Display()
     MATRIX Transform;
 
     //DrawCharacter
+    
     UpdateCharacter(&MainLevel);
     dcCamera_SetCameraPosition(&Camera, MainLevel.Character.Location.vx , MainLevel.Character.Location.vy + 500, MainLevel.Character.Location.vz + 400);
     VECTOR LookAt =  MainLevel.Character.Location;
     dcCamera_LookAt(&Camera, &LookAt);
     
+    RotMatrix(&MainLevel.Character.Rotation, &Transform);
+    TransMatrix(&Transform,  &MainLevel.Character.Location);
     dcRender_PreDrawMesh(&MainLevel, &Camera, &MainLevel.Character.Location, &MainLevel.Character.Rotation, &Transform);
     dcRender_DrawMesh(&Render, MainLevel.Character.Mesh, &Transform, MainLevel.Character.DrawParams);
-
 
     //Draw Objects
    for(int i = 0; i < MainLevel.NumObjects; i++)
@@ -132,8 +134,18 @@ void Display()
         /*
         UPDATE OBJECTS?¿?¿
         */
-        dcRender_PreDrawMesh(&MainLevel, &Camera, &MainLevel.Objects[i].Location, &MainLevel.Objects[i].Rotation, &Transform);
-        dcRender_DrawMesh(&Render, MainLevel.Objects[i].Mesh, &Transform, MainLevel.Objects[i].DrawParams);
+       MATRIX WorldTransform;    
+       //if(MainLevel.Objects[i].Parent != NULL)
+       {
+        MainLevel.Objects[i]->Rotation.vy += 10;
+        RotMatrix(&MainLevel.Objects[i]->Rotation, &Transform);
+        TransMatrix(&Transform,  &MainLevel.Objects[i]->Location);
+        GetParentTransform(MainLevel.Objects[i], &Transform, &WorldTransform);
+        
+        printf("%i  \n", Transform.t[0]);
+       }
+        dcRender_PreDrawMesh(&MainLevel, &Camera, &MainLevel.Objects[i]->Location, &MainLevel.Objects[i]->Rotation, &WorldTransform);
+        dcRender_DrawMesh(&Render, MainLevel.Objects[i]->Mesh, &WorldTransform, MainLevel.Objects[i]->DrawParams);
     }
 
     dcRender_SwapBuffers(&Render);
