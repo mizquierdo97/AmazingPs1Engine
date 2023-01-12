@@ -7,6 +7,7 @@
 #include <libgpu.h>
 #include <stdio.h>
 #include <types.h>
+#include <stdbool.h>
 
 #include "dcMath.h"
 #include "dcCamera.h"
@@ -19,14 +20,16 @@
 #include "dcCollision.h"
 #include "dcRender.h"
 #include "../third_party/modplayer/modplayer.h"
-#include "meshes/crash.h"
 #include "meshes/Box001.h"
 
 #define CUBESIZE 196 
 
 
 SDC_Render Render;
+SDC_Render FirstPlayerRender;
+SDC_Render SecondPlayerRender;
 SDC_Camera Camera;
+SDC_Camera FirstPlayerCamera;
 SDC_Level MainLevel;
 
 // Display and draw environments, double buffered
@@ -44,20 +47,26 @@ void InitGame()
     int  height = 240;
 
     CVECTOR bgColor = {60, 120, 120};        
-    dcRender_Init(&Render, width, height, bgColor, 4096 * 4, 8192 * 10, RENDER_MODE_PAL);
+    dcRender_Init(&Render, width, height, bgColor, 4096 * 4, 8192 * 10, RENDER_MODE_PAL, 1);
+    dcRender_Init(&FirstPlayerRender, width, height, bgColor, 4096 * 4, 8192 * 10, RENDER_MODE_PAL, 0);
     dcCamera_SetScreenResolution(&Camera, width, height);
-
+    Camera.PlayerCameraIndex = 0;
+    dcCamera_SetScreenResolution(&FirstPlayerCamera, width, height);
+    FirstPlayerCamera.PlayerCameraIndex = 1;
 }
 
 //This should go to a separate .h so we can modify the level without having conflicts
 void InitLevel()
 {
-
     //Camera Init
     long CameraDistance = 500;
     dcCamera_SetCameraPosition(&Camera, 0, 0, CameraDistance);
     VECTOR LookAt = {0,0, 0};
     dcCamera_LookAt(&Camera, &LookAt);
+
+    dcCamera_SetCameraPosition(&FirstPlayerCamera, 0, 200, CameraDistance);
+
+    dcCamera_LookAt(&FirstPlayerCamera, &LookAt);
 
     CVECTOR  AmbientColor = {50, 50, 50, 0};
     dcLevel_InitLight(&MainLevel, &AmbientColor);
@@ -83,8 +92,14 @@ void InitLevel()
 
     //We can move this structure initialization to a function
     SDC_DrawParams DrawParamsCrash = {
-        .tim = tim_crash,
-        .constantColor = {255, 255, 255},
+        .tim = tim_smile,
+        .constantColor = {255, 0, 255},
+        .bLighting = 1,
+        .bUseConstantColor = 1
+    };    
+    SDC_DrawParams DrawParamsCrash2 = {
+        .tim = tim_smile,
+        .constantColor = {0, 255, 255},
         .bLighting = 1,
         .bUseConstantColor = 1
     };
@@ -97,6 +112,8 @@ void InitLevel()
 
     SDC_DrawParams* DrawParamsCrashPtr = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
     *DrawParamsCrashPtr = DrawParamsCrash;
+        SDC_DrawParams* DrawParamsCrashPtr2 = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
+    *DrawParamsCrashPtr2 = DrawParamsCrash2;
     SDC_DrawParams* DrawParamsPtr = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
     *DrawParamsPtr = DrawParams;
 
@@ -105,50 +122,52 @@ void InitLevel()
 
     VECTOR BoxLocarion = {000,0, 0, 0};
     VECTOR BoxLocation2 = {200,0, 0, 0};
-    VECTOR CharacterInitialLocation = {0,-100, 0, 0};
+    VECTOR CharacterInitialLocation = {100,0, 0, 0};
+    VECTOR Character2InitialLocation = {-100, 0, 0, 0};
     
     SDC_Object* Parent = dcLevel_AddObject(&MainLevel, &Box001_Mesh, &BoxLocarion, DrawParamsPtr, NULL);
     dcLevel_AddObject(&MainLevel, &Box001_Mesh, &BoxLocation2, DrawParamsPtr, Parent);    
-    dcLevel_InitCharacter(&MainLevel, &crash_Mesh, &CharacterInitialLocation, DrawParamsCrashPtr);
+    dcLevel_InitCharacter(&MainLevel, &Box001_Mesh, &CharacterInitialLocation, DrawParamsCrashPtr);
+    dcLevel_InitCharacter(&MainLevel, &Box001_Mesh, &Character2InitialLocation, DrawParamsCrashPtr2);
 }       
 
-void Display()
+void Display(SDC_Render* InRender, SDC_Camera* InCamera)
 {
-    MATRIX Transform;
 
-    //DrawCharacter
-    
-    UpdateCharacter(&MainLevel);
-    dcCamera_SetCameraPosition(&Camera, MainLevel.Character.Location.vx , MainLevel.Character.Location.vy + 500, MainLevel.Character.Location.vz + 400);
-    VECTOR LookAt =  MainLevel.Character.Location;
-    dcCamera_LookAt(&Camera, &LookAt);
-    
-    RotMatrix(&MainLevel.Character.Rotation, &Transform);
-    TransMatrix(&Transform,  &MainLevel.Character.Location);
-    dcRender_PreDrawMesh(&MainLevel, &Camera, &MainLevel.Character.Location, &MainLevel.Character.Rotation, &Transform);
-    dcRender_DrawMesh(&Render, MainLevel.Character.Mesh, &Transform, MainLevel.Character.DrawParams);
+    MATRIX CharacterTransform;
+    for(int i = 0; i < MainLevel.NumCharacters; i++)
+    {
+        bool bIsLocalPlayer = InCamera->PlayerCameraIndex == i;
+        if(bIsLocalPlayer)
+        {
+            UpdateCharacter(MainLevel.Characters[i]);
+            dcCamera_SetCameraPosition(InCamera, MainLevel.Characters[i]->Location.vx , MainLevel.Characters[i]->Location.vy + 100, MainLevel.Characters[i]->Location.vz + 200);
+            VECTOR LookAt =  MainLevel.Characters[i]->Location;
+            dcCamera_LookAt(InCamera, &LookAt);
+        }
+        RotMatrix(&MainLevel.Characters[i]->Rotation, &CharacterTransform);
+        TransMatrix(&CharacterTransform,  &MainLevel.Characters[i]->Location);
+        dcRender_PreDrawMesh(&MainLevel, InCamera, &MainLevel.Characters[i]->Location, &MainLevel.Characters[i]->Rotation, &CharacterTransform);
+        dcRender_DrawMesh(InRender, MainLevel.Characters[i]->Mesh, &CharacterTransform, MainLevel.Characters[i]->DrawParams);
+    }
 
     //Draw Objects
+    MATRIX Transform;
    for(int i = 0; i < MainLevel.NumObjects; i++)
     {
         /*
         UPDATE OBJECTS?¿?¿
         */
-       MATRIX WorldTransform;    
-       //if(MainLevel.Objects[i].Parent != NULL)
-       {
-        MainLevel.Objects[i]->Rotation.vy += 10;
+        MATRIX WorldTransform;
+        //MainLevel.Objects[i]->Rotation.vy += 10;
         RotMatrix(&MainLevel.Objects[i]->Rotation, &Transform);
         TransMatrix(&Transform,  &MainLevel.Objects[i]->Location);
         GetParentTransform(MainLevel.Objects[i], &Transform, &WorldTransform);
-        
-        printf("%i  \n", Transform.t[0]);
-       }
-        dcRender_PreDrawMesh(&MainLevel, &Camera, &MainLevel.Objects[i]->Location, &MainLevel.Objects[i]->Rotation, &WorldTransform);
-        dcRender_DrawMesh(&Render, MainLevel.Objects[i]->Mesh, &WorldTransform, MainLevel.Objects[i]->DrawParams);
-    }
 
-    dcRender_SwapBuffers(&Render);
+        dcRender_PreDrawMesh(&MainLevel, InCamera, &MainLevel.Objects[i]->Location, &MainLevel.Objects[i]->Rotation, &WorldTransform);
+        dcRender_DrawMesh(InRender, MainLevel.Objects[i]->Mesh, &WorldTransform, MainLevel.Objects[i]->DrawParams);
+    }
+    dcRender_SwapBuffers(InRender);
 }
 
 void Input()
@@ -163,9 +182,14 @@ int main(void)
     InitLevel();
 
     while (1) 
-    {    
-        Input();
-        Display();
+    {                
+        VSync( 0 );
+        DrawSync( 0 );
+        SetDispMask( 1 );
+
+        Input(); 
+        Display(&Render, &Camera);       
+        Display(&FirstPlayerRender, &FirstPlayerCamera);
     }
 
     return 0;

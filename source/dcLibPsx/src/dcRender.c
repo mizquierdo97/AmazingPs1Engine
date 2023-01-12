@@ -29,12 +29,14 @@ void _dcRender_ReportPrimitivesSize(SDC_Render* render) {
     totalPrimitives = 0;
 }
 
-void dcRender_Init(SDC_Render* render, int width, int height, CVECTOR bgColor, int orderingTableCount, int bytesPrimitives, EDC_Mode mode) {
-	InitGeom();
+void dcRender_Init(SDC_Render* render, int width, int height, CVECTOR bgColor, int orderingTableCount, int bytesPrimitives, EDC_Mode mode, int bFirstInit) {
+	if(bFirstInit)
+    {
+    InitGeom();
 
     ResetGraph( 0 );
     SetGraphDebug(0);
-
+    }
     render->orderingTableCount = orderingTableCount;
     render->bytesPrimitives = bytesPrimitives;
     render->doubleBufferIndex = 0;
@@ -53,12 +55,22 @@ void dcRender_Init(SDC_Render* render, int width, int height, CVECTOR bgColor, i
     
     render->nextPrimitive = render->primitives[0];
 
-    SetDefDrawEnv( &render->drawEnvironment[0],    0, 0,      width, height );
-    SetDefDrawEnv( &render->drawEnvironment[1],    0, height, width, height );
+if(bFirstInit)
+{
+    SetDefDrawEnv( &render->drawEnvironment[0],    0, 0,      width/2, height );
+    SetDefDrawEnv( &render->drawEnvironment[1],    0, height, width/2, height );
 
     SetDefDispEnv( &render->displayEnvironment[0], 0, height, width, height );
     SetDefDispEnv( &render->displayEnvironment[1], 0, 0,      width, height );
+}
+else
+{
+    SetDefDrawEnv( &render->drawEnvironment[0],    width/2, 0,      width/2, height );
+    SetDefDrawEnv( &render->drawEnvironment[1],    width/2, height,       width/2, height );
 
+    SetDefDispEnv( &render->displayEnvironment[0], 0, height,       width, height );
+    SetDefDispEnv( &render->displayEnvironment[1], 0, 0,      width, height );
+}
     setRGB0( &render->drawEnvironment[0], bgColor.r, bgColor.g, bgColor.b );
     render->drawEnvironment[0].isbg = 1;
     render->drawEnvironment[0].dtd = 1;
@@ -68,18 +80,19 @@ void dcRender_Init(SDC_Render* render, int width, int height, CVECTOR bgColor, i
     render->drawEnvironment[1].isbg = 1;
     render->drawEnvironment[1].dtd = 1;
     render->displayEnvironment[1].isinter = 1;
-
+	if(bFirstInit)
+    {
     SetDispMask(1);    
 	// Set GTE offset (recommended method  of centering)
-    SetGeomOffset(width>>1, height>>1);
+    SetGeomOffset((width/2)>>1, height>>1);
 	// Set screen depth (basically FOV control, W/2 works best)
-	SetGeomScreen(width >> 1);
+	SetGeomScreen((width/2) >> 1);
     SetVideoMode(mode==RENDER_MODE_NTCS?MODE_NTSC:MODE_PAL);
 
     //Debug font (to remove)
     FntLoad(960, 128);
     SetDumpFnt(FntOpen(16, 16, 320, 64, 0, 512));
-        
+    }
     PutDispEnv( &render->displayEnvironment[render->doubleBufferIndex] );
     PutDrawEnv( &render->drawEnvironment[render->doubleBufferIndex] );
 
@@ -118,15 +131,10 @@ void dcRender_SetAmbientColor(SDC_Render* render, CVECTOR* ambientColor)
 
 void dcRender_SwapBuffers(SDC_Render* render) {
     // _dcRender_ReportPrimitivesSize(render);
-    
-    VSync( 0 );
-    DrawSync( 0 );
-    SetDispMask( 1 );
-    
-    render->doubleBufferIndex = !render->doubleBufferIndex;
-    
-    ClearImage(&render->drawEnvironment[render->doubleBufferIndex].clip, render->bgColor.r, render->bgColor.g, render->bgColor.b);
 
+    
+    render->doubleBufferIndex = !render->doubleBufferIndex;    
+     ClearImage(&render->drawEnvironment[render->doubleBufferIndex].clip, 0, 255, 0);
     PutDrawEnv( &render->drawEnvironment[render->doubleBufferIndex] );
     PutDispEnv( &render->displayEnvironment[render->doubleBufferIndex] );
     

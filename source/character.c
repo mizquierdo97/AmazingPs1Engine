@@ -1,25 +1,24 @@
 #include "character.h"
 
-void UpdateCharacter(SDC_Level *Level)
+void UpdateCharacter(SDC_Character* Character)
 {
-    SDC_Character* Character = &Level->Character;
-       
-    u_long PadState = PadRead(0);
+    int PlayerIndex = Character->PlayerIndex;
+    u_long PadState = PadRead(PlayerIndex);
 
     SVECTOR IncrementalPosition = {0,0,0};
-    if( _PAD(0,PADLup ) & PadState )
+    if( _PAD(PlayerIndex,PADLup ) & PadState )
     {
         IncrementalPosition.vz -=10;
     }
-    if( _PAD(0,PADLdown ) & PadState )
+    if( _PAD(PlayerIndex,PADLdown ) & PadState )
     {
         IncrementalPosition.vz +=10;
     }
-    if( _PAD(0,PADLright ) & PadState )
+    if( _PAD(PlayerIndex,PADLright ) & PadState )
     {
         IncrementalPosition.vx +=10;
     }
-    if( _PAD(0,PADLleft ) & PadState )
+    if( _PAD(PlayerIndex,PADLleft ) & PadState )
     {
         IncrementalPosition.vx -=10;
     }

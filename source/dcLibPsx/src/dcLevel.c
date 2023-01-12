@@ -50,15 +50,19 @@ SDC_Object* dcLevel_AddObject(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR* Locati
 }
 
 void dcLevel_InitCharacter(SDC_Level *Level, SDC_Mesh3D *Mesh, VECTOR *Location, SDC_DrawParams *DrawParams)
-{
-    SDC_Character NewCharacter;
-    NewCharacter.Location = *Location; //<----- to Transform
+{   
+    SDC_Character* NewCharacter = malloc3(sizeof(SDC_Character));
+    NewCharacter->Location = *Location; //<----- to Transform
     SVECTOR Rot = {0,0,0};
-    NewCharacter.Rotation =Rot;
-    NewCharacter.Mesh = Mesh;
-    NewCharacter.DrawParams = DrawParams;
+    NewCharacter->Rotation =Rot;
+    NewCharacter->Mesh = Mesh;
+    NewCharacter->DrawParams = DrawParams;
+    NewCharacter->PlayerIndex = Level->NumCharacters;
+    //Malloc for every object? or with MaxArray size?
+    Level->Characters = realloc3(Level->Characters, (Level->NumCharacters + 1) * sizeof(SDC_Object*));
 
-    Level->Character = NewCharacter;
+    Level->Characters[Level->NumCharacters] = NewCharacter;    
+    Level->NumCharacters++;
 }
 
 void GetParentTransform(SDC_Object* Object, MATRIX *Transform, MATRIX *OutTransform)
@@ -66,9 +70,7 @@ void GetParentTransform(SDC_Object* Object, MATRIX *Transform, MATRIX *OutTransf
     if(Object->Parent != NULL)
     {
         GetParentTransform(Object->Parent, Transform, OutTransform);        
-        printf("%i --- %i --- %i \n",Object->Location.vx, OutTransform->t[0]);
         CompMatrix(OutTransform, Transform, OutTransform);        
-        printf("%i --- %i --- %i\n",  Transform->t[0], OutTransform->t[0]);
     }
     else
     {

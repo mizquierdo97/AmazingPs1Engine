@@ -112,7 +112,7 @@ typedef struct {
 } SDC_Mesh3D;
 
 
-void dcRender_Init(SDC_Render* render, int width, int height, CVECTOR bgColor, int orderingTableLength/* = 4096*/, int bytesPrimitives/* = 8192*/, EDC_Mode mode );
+void dcRender_Init(SDC_Render* render, int width, int height, CVECTOR bgColor, int orderingTableLength/* = 4096*/, int bytesPrimitives/* = 8192*/, EDC_Mode mode, int bFirstInit );
 void dcRender_SwapBuffers(SDC_Render* render);
 
 void dcRender_LoadTexture(TIM_IMAGE* tim, u_long* texture);

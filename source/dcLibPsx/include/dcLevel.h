@@ -20,6 +20,7 @@ typedef struct SDC_Object
 
 typedef struct 
 {
+    int PlayerIndex;
     VECTOR Location;
     SVECTOR Rotation;
     SDC_Mesh3D* Mesh;
@@ -36,7 +37,8 @@ typedef struct
 typedef struct SDC_Level
 {
     SDC_Object** Objects;
-    SDC_Character Character;
+    SDC_Character** Characters;
+    int NumCharacters;
     int NumObjects;
     int MaxObjects;
 

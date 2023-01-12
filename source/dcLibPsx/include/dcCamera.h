@@ -8,6 +8,7 @@ typedef struct SDC_Camera{
     VECTOR  position;
     VECTOR  viewScale;
     MATRIX  viewMatrix;
+    int PlayerCameraIndex;
 
 } SDC_Camera;
 
