@@ -13,9 +13,11 @@ SRCS = main.c\
 		dcLibPsx/src/dcMisc.c\
 		dcLibPsx/src/dcLevel.c\
 		dcLibPsx/src/dcSprite.c\
+		dcLibPsx/src/dcAudio.c\
 		character.c\
 		textures/smile.tim\
 		textures/colorpallete.tim\
+		data/accept.vag data/beep.vag data/bell.vag\
 
 CPPFLAGS += -I../third_party/common
 CPPFLAGS += -I../third_party/psyq/include

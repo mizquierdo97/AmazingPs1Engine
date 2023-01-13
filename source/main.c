@@ -18,6 +18,7 @@
 #include "dcMisc.h"
 #include "dcSprite.h"
 #include "dcCollision.h"
+#include "dcAudio.h"
 #include "dcRender.h"
 #include "../third_party/modplayer/modplayer.h"
 #include "meshes/Box001.h"
@@ -36,6 +37,10 @@ SDC_Level MainLevel;
 
 extern unsigned long _binary_textures_colorpallete_tim_start[];
 extern unsigned long _binary_textures_smile_tim_start[];
+
+extern unsigned long _binary_data_accept_vag_start[];
+extern unsigned long _binary_data_beep_vag_start[];
+extern unsigned long _binary_data_bell_vag_start[];
 
 void InitGame()
 {
@@ -57,7 +62,11 @@ void InitGame()
 
 //This should go to a separate .h so we can modify the level without having conflicts
 void InitLevel()
-{
+{    
+
+
+    //dcAudio_MusicPlay(&audio, 0);
+
     //Camera Init
     long CameraDistance = 500;
     dcCamera_SetCameraPosition(&Camera, 0, 0, CameraDistance);
@@ -120,12 +129,12 @@ void InitLevel()
     dcRender_LoadTexture(tim_crash, _binary_textures_colorpallete_tim_start);
     dcRender_LoadTexture(tim_smile, _binary_textures_smile_tim_start);
 
-    VECTOR BoxLocarion = {000,0, 0, 0};
+    VECTOR BoxLocation = {000,0, 0, 0};
     VECTOR BoxLocation2 = {200,0, 0, 0};
     VECTOR CharacterInitialLocation = {100,0, 0, 0};
     VECTOR Character2InitialLocation = {-100, 0, 0, 0};
     
-    SDC_Object* Parent = dcLevel_AddObject(&MainLevel, &Box001_Mesh, &BoxLocarion, DrawParamsPtr, NULL);
+    SDC_Object* Parent = dcLevel_AddObject(&MainLevel, &Box001_Mesh, &BoxLocation, DrawParamsPtr, NULL);
     dcLevel_AddObject(&MainLevel, &Box001_Mesh, &BoxLocation2, DrawParamsPtr, Parent);    
     dcLevel_InitCharacter(&MainLevel, &Box001_Mesh, &CharacterInitialLocation, DrawParamsCrashPtr);
     dcLevel_InitCharacter(&MainLevel, &Box001_Mesh, &Character2InitialLocation, DrawParamsCrashPtr2);
@@ -172,17 +181,54 @@ void Display(SDC_Render* InRender, SDC_Camera* InCamera)
 
 void Input()
 {
-    // ??¿¿???¿?¿
+    
+    u_long PadState = PadRead(0);
+    if( _PAD(0,PADLup ) & PadState )
+    {
+    }
+    if( _PAD(0,PADLdown ) & PadState )
+    {
+    }
+    if( _PAD(0,PADLright ) & PadState )
+    {
+    }
+    if( _PAD(0,PADLleft ) & PadState )
+    {
+    }
+    if( _PAD(0,PADRup ) & PadState )
+    {
+    }
+    if( _PAD(0,PADRdown ) & PadState )
+    {
+    }
+    if( _PAD(0,PADRright ) & PadState )
+    {
+    }
+    if( _PAD(0,PADRleft ) & PadState )
+    {
+    }
 }
 
 int main(void) 
 {    
 
+    SDC_Audio audio;
+    dcAudio_Init(&audio, 16);
+    
     InitGame();   
     InitLevel();
 
+
+    //dcAudio_SfxLoad(&audio, &bellSfx, (u_char *)_binary_data_bell_vag_start);
+    //dcAudio_SfxLoad(&audio, &acceptSfx, (u_char *)_binary_data_accept_vag_start);
+    //dcAudio_SfxLoad(&audio, &beepSfx, (u_char *)_binary_data_beep_vag_start); 
+
     while (1) 
-    {                
+    {            
+    // Init Pad
+   
+    // Store input values    
+
         VSync( 0 );
         DrawSync( 0 );
         SetDispMask( 1 );

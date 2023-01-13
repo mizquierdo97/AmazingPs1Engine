@@ -3,7 +3,7 @@
 void UpdateCharacter(SDC_Character* Character)
 {
     int PlayerIndex = Character->PlayerIndex;
-    u_long PadState = PadRead(PlayerIndex);
+    u_long PadState = PadRead(0);
 
     SVECTOR IncrementalPosition = {0,0,0};
     if( _PAD(PlayerIndex,PADLup ) & PadState )
