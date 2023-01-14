@@ -241,21 +241,16 @@ void InitLevel()
 
 
 VECTOR nullbox = {0,0,0};
-    dcLevel_AddObject(&MainLevel, &floor_mesh_Mesh, &BoxLocarion, DrawParamsFloorPtr, NULL, 0 ,&nullbox);
+    dcLevel_AddObject(&MainLevel, &floor_mesh_Mesh, &BoxLocarion,&BoxRotation, DrawParamsFloorPtr, NULL, 0 ,&nullbox);
     
         
     SDC_Character* FirstCharacter = dcLevel_InitCharacter(&MainLevel, &body_Mesh, &CharacterInitialLocation, DrawParamsCrashPtr);
     dcLevel_InitCharacter(&MainLevel, &body_Mesh, &Character2InitialLocation, DrawParamsCrashPtr2);    
     //el bonifacio
-<<<<<<< HEAD
-    dcLevel_AddObjectOnCharacter(&MainLevel, &Bonifacio_Mesh, &palaLocation, DrawParamsPalaPtr, FirstCharacter, 1 ,&BoxHalfSize);
-    
 
-=======
     SVECTOR PalaRotation = {2048, 0 ,1024};
     SDC_Object* Pala = dcLevel_AddObjectOnCharacter(&MainLevel, &Bonifacio_Mesh, &palaLocation, &PalaRotation, DrawParamsPalaPtr, FirstCharacter, 1 ,&BoxHalfSize);
     FirstCharacter->Pala = Pala;
->>>>>>> 367a0290db16836581ccee006e406590c025be2a
 }       
 
 void Display(SDC_Render* InRender, SDC_Camera* InCamera)
