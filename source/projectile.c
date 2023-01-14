@@ -10,8 +10,7 @@ void UpdateProjectile(SDC_Level* Level, SDC_Projectile* Projectile, int IndexInA
      Projectile->Location.vy = Projectile->Location.vy + Projectile->Vy;
 
      if( Projectile->Location.vy < 0)
-     {
+     {          
           dcLevel_DestroyProjectile(Level, IndexInArray);
-          printf("%i \n", Level->NumProjectiles);
      }
 }

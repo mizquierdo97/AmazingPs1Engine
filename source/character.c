@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "dcRender.h"
 #include "meshes/Box001.h"
+#include "dcMath.h"
 
 void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
 {
@@ -51,6 +52,17 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
     }
     if( _PAD(PlayerIndex,PADRright ) & PadState )
     {
+        if(!Character->bDoingParry && Character->ParryCurrentCooldown <= 0)
+        {
+            Character->bDoingParry = 1;
+            Character->ParryCurrentFrame = 0;
+           Character->ParryFrames = 30;
+           Character->ParryCurrentCooldown = Character->ParryCooldown;
+        }
+
+    }
+    if( _PAD(PlayerIndex,PADRdown ) & PadState )
+    {
         Character->bHoldingFire = 1;
         Character->ProjectileStrength += 1;
 
@@ -59,11 +71,7 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
     {
         if(Character->bHoldingFire)
         {
-            printf("%i \n", &Box001_Mesh.numIndices);
             //FIRE
-
-
-
             //We can move this structure initialization to a function
             SDC_DrawParams DrawParams = {
                 .tim = NULL,
@@ -85,6 +93,38 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
 
     }
      VECTOR FutureLocation = {Character->Location.vx, Character->Location.vy, Character->Location.vz};
+     if(Character->bDoingParry)
+     { 
+        printf("Doing Parry %i --- %i\n", Character->ParryCurrentFrame, Character->ParryFrames);
+        Character->ParryCurrentFrame++;
+        if(Character->ParryCurrentFrame >= Character->ParryFrames)
+        {
+        printf("Stop Parry \n");
+            Character->bDoingParry = 0;
+        }
+        for(int i = 0; i < Level->NumProjectiles; i++)
+        {
+            VECTOR ProjectileLocation = Level->Projectiles[i]->Location;
+            VECTOR CharacterLocation = Character->Location;
+            VECTOR Diff = {ProjectileLocation.vx - CharacterLocation.vx,ProjectileLocation.vy - CharacterLocation.vy,ProjectileLocation.vz - CharacterLocation.vz};
+            int Dist =  SquareRoot12( DC_MUL(Diff.vx , Diff.vx) + DC_MUL(Diff.vy , Diff.vy) + DC_MUL(Diff.vz , Diff.vz));
+            printf("%i \n", Dist);
+            if(Dist  < 100)
+            {
+                printf("PARRYYYYYY! \n");
+                SVECTOR Dir = Level->Projectiles[i]->Direction;
+                Level->Projectiles[i]->Direction = (SVECTOR){-Dir.vx, -Dir.vy, -Dir.vz};
+                Level->Projectiles[i]->Vox *= 3;
+                Level->Projectiles[i]->Vy = 0;
+                Character->bDoingParry = 0;
+                //Parry
+            }
+        }
+     }
+     else{
+        
+        Character->ParryCurrentCooldown--;
+     }
     if(Character->bDoingDash)
     {
         FutureLocation.vx = Character->Location.vx + ((Character->Direction.vx * 50) >> 12);    

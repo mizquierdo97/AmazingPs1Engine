@@ -21,6 +21,7 @@ SRCS = main.c\
 		projectile.c\
 		textures/Letra_A.tim\
 		textures/Pala.tim\
+		
 CPPFLAGS += -I../third_party/common
 CPPFLAGS += -I../third_party/psyq/include
 CPPFLAGS += -I./dcLibPsx/include

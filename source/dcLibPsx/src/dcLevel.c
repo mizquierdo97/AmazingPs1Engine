@@ -52,7 +52,28 @@ SDC_Object* dcLevel_AddObject(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR* Locati
     return Obj;
 }
 
-void dcLevel_InitCharacter(SDC_Level *Level, SDC_Mesh3D *Mesh, VECTOR *Location, SDC_DrawParams *DrawParams)
+SDC_Object* dcLevel_AddObjectOnCharacter(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC_DrawParams* DrawParams, SDC_Character* Parent, int bHasCollision, VECTOR* BoxHalfCollision)
+{    
+    SDC_Object* Obj = malloc3(sizeof(SDC_Object));
+    Obj->Location = *Location; //<----- to Transform
+    SVECTOR Rot = {0,0,0};
+    Obj->Rotation =Rot;
+    Obj->Mesh = Mesh;
+    Obj->DrawParams = DrawParams;
+    Obj->CharacterParent = Parent;
+    Obj->bHasCollision = bHasCollision;
+    Obj->BoxHalfSize = *BoxHalfCollision;
+    
+    //Malloc for every object? or with MaxArray size?
+    Level->Objects = realloc3(Level->Objects, (Level->NumObjects + 1) * sizeof(SDC_Object*));
+
+    Level->Objects[Level->NumObjects] = Obj;    
+    Level->NumObjects++;
+    Level->MaxObjects++;   
+    return Obj;
+}
+
+SDC_Character* dcLevel_InitCharacter(SDC_Level *Level, SDC_Mesh3D *Mesh, VECTOR *Location, SDC_DrawParams *DrawParams)
 {   
     SDC_Character* NewCharacter = malloc3(sizeof(SDC_Character));
     NewCharacter->Location = *Location; //<----- to Transform
@@ -61,11 +82,17 @@ void dcLevel_InitCharacter(SDC_Level *Level, SDC_Mesh3D *Mesh, VECTOR *Location,
     NewCharacter->Mesh = Mesh;
     NewCharacter->DrawParams = DrawParams;
     NewCharacter->PlayerIndex = Level->NumCharacters;
+    NewCharacter->bDoingParry = 0;
+    NewCharacter->bHoldingFire = 0;
+    NewCharacter->bDoingDash = 0;
+     NewCharacter->ParryCooldown = 60;
+     NewCharacter->ParryCurrentCooldown =0;
     //Malloc for every object? or with MaxArray size?
     Level->Characters = realloc3(Level->Characters, (Level->NumCharacters + 1) * sizeof(SDC_Object*));
 
     Level->Characters[Level->NumCharacters] = NewCharacter;    
     Level->NumCharacters++;
+    return NewCharacter;
 }
 void dcLevel_AddProjectile(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Direction,int Strength, SDC_DrawParams* DrawParams)
 {
@@ -90,8 +117,8 @@ void dcLevel_DestroyProjectile(SDC_Level* Level, int i)
 {
     //Explode
 
-    SDC_Projectile** temp = malloc((Level->NumProjectiles - 1) * sizeof(SDC_Projectile*)); // allocate an array with a size 1 less than the current one
-printf("Num %i \n", i);
+    SDC_Projectile** temp = malloc3((Level->NumProjectiles - 1) * sizeof(SDC_Projectile*)); // allocate an array with a size 1 less than the current one
+
     if (i != 0)
         memcpy(temp, Level->Projectiles, i * sizeof(SDC_Projectile*)); // copy everything BEFORE the index
 
@@ -118,3 +145,4 @@ void GetParentTransform(SDC_Object* Object, MATRIX *Transform, MATRIX *OutTransf
         TransMatrix(OutTransform, &Object->Location);
     }
 }
+

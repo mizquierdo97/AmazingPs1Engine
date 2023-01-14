@@ -7,6 +7,7 @@
 #include <libgs.h>
 
 typedef struct SDC_Object SDC_Object;
+typedef struct SDC_Character SDC_Character;
 
 typedef struct SDC_Object
 {
@@ -15,6 +16,7 @@ typedef struct SDC_Object
     SDC_Mesh3D* Mesh;
     SDC_DrawParams* DrawParams;
     SDC_Object* Parent;
+    SDC_Character* CharacterParent;
     int bHasCollision;
     VECTOR BoxHalfSize;
 }SDC_Object;
@@ -31,7 +33,7 @@ typedef struct SDC_Projectile
     SDC_DrawParams* DrawParams;
 }SDC_Projectile;
 
-typedef struct 
+typedef struct  SDC_Character
 {
     int PlayerIndex;
     VECTOR Location;
@@ -53,6 +55,13 @@ typedef struct
     int bHoldingFire;
     int ProjectileSpeed;
     int ProjectileStrength;
+
+    //Parry
+    int bDoingParry;
+    int ParryFrames;
+    int ParryCurrentFrame;
+    int ParryCooldown;
+    int ParryCurrentCooldown;
 
 }SDC_Character;
 
@@ -88,11 +97,12 @@ MATRIX ColorMatrix;
 void dcLevel_InitLight(SDC_Level* Level, CVECTOR* AmbientColor);
 void dcLevel_SetLight(SDC_Level* Level, int LightIndex, SVECTOR* LightDirection, SVECTOR* LightColor);
 SDC_Object* dcLevel_AddObject(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC_DrawParams* DrawParams, SDC_Object* Parent, int bHasCollision, VECTOR* BoxHalfCollision);
+SDC_Object* dcLevel_AddObjectOnCharacter(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC_DrawParams* DrawParams, SDC_Character* Parent, int bHasCollision, VECTOR* BoxHalfCollision);
 
 void dcLevel_AddProjectile(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Direction, int Strength,  SDC_DrawParams* DrawParams);
 void dcLevel_DestroyProjectile(SDC_Level* Level, int i);
 
-void dcLevel_InitCharacter(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC_DrawParams* DrawParams);
+SDC_Character* dcLevel_InitCharacter(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC_DrawParams* DrawParams);
 void GetParentTransform(SDC_Object* Object, MATRIX* Transform, MATRIX* OutTransform);
 
 #endif /* _DC_LEVEL_H */
