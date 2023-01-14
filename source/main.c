@@ -20,6 +20,7 @@
 #include "dcCollision.h"
 #include "dcAudio.h"
 #include "dcRender.h"
+#include "projectile.h"
 #include "../third_party/modplayer/modplayer.h"
 #include "meshes/Box001.h"
 
@@ -133,9 +134,11 @@ void InitLevel()
     VECTOR BoxLocation2 = {200,0, 0, 0};
     VECTOR CharacterInitialLocation = {100,0, 0, 0};
     VECTOR Character2InitialLocation = {-100, 0, 0, 0};
-    
-    SDC_Object* Parent = dcLevel_AddObject(&MainLevel, &Box001_Mesh, &BoxLocation, DrawParamsPtr, NULL);
-    dcLevel_AddObject(&MainLevel, &Box001_Mesh, &BoxLocation2, DrawParamsPtr, Parent);    
+
+    VECTOR CollisionHalfBox = {20, 20, 20};
+    SDC_Object* Parent = dcLevel_AddObject(&MainLevel, &Box001_Mesh, &BoxLocation, DrawParamsPtr, NULL, 1, &CollisionHalfBox);
+ 
+    dcLevel_AddObject(&MainLevel, &Box001_Mesh, &BoxLocation2, DrawParamsPtr, Parent, 1, &CollisionHalfBox);    
     dcLevel_InitCharacter(&MainLevel, &Box001_Mesh, &CharacterInitialLocation, DrawParamsCrashPtr);
     dcLevel_InitCharacter(&MainLevel, &Box001_Mesh, &Character2InitialLocation, DrawParamsCrashPtr2);
 }       
@@ -149,8 +152,9 @@ void Display(SDC_Render* InRender, SDC_Camera* InCamera)
         bool bIsLocalPlayer = InCamera->PlayerCameraIndex == i;
         if(bIsLocalPlayer)
         {
-            UpdateCharacter(MainLevel.Characters[i]);
-            dcCamera_SetCameraPosition(InCamera, MainLevel.Characters[i]->Location.vx , MainLevel.Characters[i]->Location.vy + 100, MainLevel.Characters[i]->Location.vz + 200);
+            UpdateCharacter(MainLevel.Characters[i], &MainLevel);
+            SVECTOR CameraLocation = MainLevel.Characters[i]->FrontVector;
+            dcCamera_SetCameraPosition(InCamera, MainLevel.Characters[i]->Location.vx + CameraLocation.vx / 20, MainLevel.Characters[i]->Location.vy + 200, MainLevel.Characters[i]->Location.vz + CameraLocation.vz / 20);
             VECTOR LookAt =  MainLevel.Characters[i]->Location;
             dcCamera_LookAt(InCamera, &LookAt);
         }
@@ -159,12 +163,10 @@ void Display(SDC_Render* InRender, SDC_Camera* InCamera)
         dcRender_PreDrawMesh(&MainLevel, InCamera, &MainLevel.Characters[i]->Location, &MainLevel.Characters[i]->Rotation, &CharacterTransform);
         dcRender_DrawMesh(InRender, MainLevel.Characters[i]->Mesh, &CharacterTransform, MainLevel.Characters[i]->DrawParams);
     }
-
     //Draw Objects
     MATRIX Transform;
    for(int i = 0; i < MainLevel.NumObjects; i++)
-    {
-        /*
+    {         /*
         UPDATE OBJECTS?¿?¿
         */
         MATRIX WorldTransform;
@@ -175,6 +177,18 @@ void Display(SDC_Render* InRender, SDC_Camera* InCamera)
 
         dcRender_PreDrawMesh(&MainLevel, InCamera, &MainLevel.Objects[i]->Location, &MainLevel.Objects[i]->Rotation, &WorldTransform);
         dcRender_DrawMesh(InRender, MainLevel.Objects[i]->Mesh, &WorldTransform, MainLevel.Objects[i]->DrawParams);
+    }
+
+    for(int i = 0; i < MainLevel.NumProjectiles; i++)
+    {
+        MATRIX WorldTransform;
+        //MainLevel.Objects[i]->Rotation.vy += 10;
+        RotMatrix(&MainLevel.Projectiles[i]->Rotation, &WorldTransform);
+        TransMatrix(&WorldTransform,  &MainLevel.Projectiles[i]->Location);
+        //GetParentTransform(MainLevel.Projectiles[i], &Transform, &WorldTransform);
+
+        dcRender_PreDrawMesh(&MainLevel, InCamera, &MainLevel.Projectiles[i]->Location, &MainLevel.Projectiles[i]->Rotation, &WorldTransform);
+        dcRender_DrawMesh(InRender, MainLevel.Projectiles[i]->Mesh, &WorldTransform, MainLevel.Projectiles[i]->DrawParams);
     }
     dcRender_SwapBuffers(InRender);
 }
@@ -211,9 +225,6 @@ void Input()
 
 int main(void) 
 {    
-
-    SDC_Audio audio;
-    dcAudio_Init(&audio, 16);
     
     InitGame();   
     InitLevel();
@@ -233,6 +244,11 @@ int main(void)
         DrawSync( 0 );
         SetDispMask( 1 );
 
+
+    for(int i = 0; i < MainLevel.NumProjectiles; i++)
+    {
+        UpdateProjectile(&MainLevel, MainLevel.Projectiles[i], i);
+    }
         Input(); 
         Display(&Render, &Camera);       
         Display(&FirstPlayerRender, &FirstPlayerCamera);

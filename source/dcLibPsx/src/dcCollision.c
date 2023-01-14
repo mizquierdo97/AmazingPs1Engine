@@ -1,6 +1,7 @@
 
 #include "dcCollision.h"
 #include "dcMath.h"
+#include <stdio.h>
 
 long dcCollision_RaySphereInteresct( VECTOR* rayOrigin, SVECTOR* rayDir, VECTOR* sphereCenter, long sphereRadius )
 {
@@ -47,4 +48,21 @@ long dcCollision_RayBOXInteresct( VECTOR* rayOrigin, SVECTOR* rayDir, VECTOR* bo
 long dcCollision_SpheresOverlap( VECTOR* sphere1Center, VECTOR* sphere2center, long sphere1Radius, long sphere2Radius )
 {
     return 0;
+}
+
+long dcCollision_SphereOverlapBox( VECTOR* sphereCenter, long sphereRadius,  VECTOR* boxCenter,  VECTOR* boxHalfSize)
+{
+      // get box closest point to sphere center by clamping
+  int x = DC_MAX(boxCenter->vx - boxHalfSize->vx, DC_MIN(sphereCenter->vx, boxCenter->vx + boxHalfSize->vx));
+  int y = DC_MAX(boxCenter->vy - boxHalfSize->vy, DC_MIN(sphereCenter->vy, boxCenter->vy + boxHalfSize->vy));
+  int z = DC_MAX(boxCenter->vz - boxHalfSize->vz, DC_MIN(sphereCenter->vz, boxCenter->vz + boxHalfSize->vz));
+
+  // this is the same as isPointInsideSphere
+  int distance = SquareRoot12(
+    DC_MUL((x - sphereCenter->vx) , (x - sphereCenter->vx)) +
+      DC_MUL((y - sphereCenter->vy) ,(y - sphereCenter->vy)) +
+      DC_MUL((z - sphereCenter->vz) , (z - sphereCenter->vz))
+  );
+int ret = distance < sphereRadius;
+  return ret;
 }

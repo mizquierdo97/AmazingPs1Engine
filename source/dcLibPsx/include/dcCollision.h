@@ -15,6 +15,7 @@ long dcCollision_RayBOXInteresct( VECTOR* rayOrigin, SVECTOR* rayDir, VECTOR* bo
 /* SHAPE OVERLAPS */
 
 long dcCollision_SpheresOverlap( VECTOR* sphere1Center, VECTOR* sphere2center, long sphere1Radius, long sphere2Radius );
+long dcCollision_SphereOverlapBox( VECTOR* sphereCenter, long sphereRadius,  VECTOR* boxCenter,  VECTOR* boxHalfSize);
 
 
 #endif /* _DC_COLLISION_H */

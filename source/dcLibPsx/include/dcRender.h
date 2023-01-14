@@ -102,6 +102,14 @@ typedef struct {
 } SDC_VertexTexturedNormal; // POLIGON_VERTEX_TEXTURED_NORMAL
 
 typedef struct {
+    SVECTOR position;
+    SVECTOR normal;
+    short	u;
+    short	v;
+    short boneIndex;
+} SDC_VertexTexturedNormalSkel; // POLIGON_VERTEX_TEXTURED_NORMAL
+
+typedef struct {
     void*     vertexs;
     u_short*  indices;
     const TIM_IMAGE* tim;

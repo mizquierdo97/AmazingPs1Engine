@@ -18,6 +18,7 @@ SRCS = main.c\
 		textures/smile.tim\
 		textures/colorpallete.tim\
 		data/accept.vag data/beep.vag data/bell.vag\
+		projectile.c\
 
 CPPFLAGS += -I../third_party/common
 CPPFLAGS += -I../third_party/psyq/include

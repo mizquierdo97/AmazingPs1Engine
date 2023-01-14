@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <memory.h>
+#include "dcMath.h"
 
 void dcLevel_InitLight(SDC_Level *Level, CVECTOR *AmbientColor)
 {
@@ -30,7 +31,7 @@ void dcLevel_SetLight(SDC_Level* Level, int LightIndex, SVECTOR* LightDirection,
 
 }
 
-SDC_Object* dcLevel_AddObject(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC_DrawParams* DrawParams, SDC_Object* Parent)
+SDC_Object* dcLevel_AddObject(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC_DrawParams* DrawParams, SDC_Object* Parent, int bHasCollision, VECTOR* BoxHalfCollision)
 {
     SDC_Object* Obj = malloc3(sizeof(SDC_Object));
     Obj->Location = *Location; //<----- to Transform
@@ -39,6 +40,8 @@ SDC_Object* dcLevel_AddObject(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR* Locati
     Obj->Mesh = Mesh;
     Obj->DrawParams = DrawParams;
     Obj->Parent = Parent;
+    Obj->bHasCollision = bHasCollision;
+    Obj->BoxHalfSize = *BoxHalfCollision;
     
     //Malloc for every object? or with MaxArray size?
     Level->Objects = realloc3(Level->Objects, (Level->NumObjects + 1) * sizeof(SDC_Object*));
@@ -63,6 +66,43 @@ void dcLevel_InitCharacter(SDC_Level *Level, SDC_Mesh3D *Mesh, VECTOR *Location,
 
     Level->Characters[Level->NumCharacters] = NewCharacter;    
     Level->NumCharacters++;
+}
+void dcLevel_AddProjectile(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Direction,int Strength, SDC_DrawParams* DrawParams)
+{
+    SDC_Projectile* NewProjectile = malloc3(sizeof(SDC_Projectile));
+    NewProjectile->Location = *Location; //<----- to Transform
+    SVECTOR Rot = {0,0,0};
+    NewProjectile->Rotation =Rot;
+    NewProjectile->Mesh = Mesh;
+    NewProjectile->DrawParams = DrawParams;
+    NewProjectile->Vox = DC_MIN(DC_MAX(Strength/2, 10), 100);
+    NewProjectile->Voy = DC_MIN(DC_MAX(Strength/2, 10), 100);;
+    NewProjectile->Vy = NewProjectile->Voy;
+    NewProjectile->Direction = *Direction;
+   // NewProjectile->Init;
+    //NewProjectile->PlayerIndex = Level->NumCharacters;
+    //Malloc for every object? or with MaxArray size?
+    Level->Projectiles = realloc3(Level->Projectiles, (Level->NumProjectiles + 1) * sizeof(SDC_Projectile*));
+    Level->Projectiles[Level->NumProjectiles] = NewProjectile;
+    Level->NumProjectiles++;
+}
+void dcLevel_DestroyProjectile(SDC_Level* Level, int i)
+{
+    //Explode
+
+    SDC_Projectile** temp = malloc((Level->NumProjectiles - 1) * sizeof(SDC_Projectile*)); // allocate an array with a size 1 less than the current one
+printf("Num %i \n", i);
+    if (i != 0)
+        memcpy(temp, Level->Projectiles, i * sizeof(SDC_Projectile*)); // copy everything BEFORE the index
+
+    if (i != (Level->NumProjectiles - 1))
+        memcpy(temp+i, Level->Projectiles+i+1, (Level->NumProjectiles - i - 1) * sizeof(SDC_Projectile*)); // copy everything AFTER the index
+    
+    free3 (Level->Projectiles[i]);
+    free3 (Level->Projectiles);
+    
+    Level->NumProjectiles--;
+    Level->Projectiles = temp;
 }
 
 void GetParentTransform(SDC_Object* Object, MATRIX *Transform, MATRIX *OutTransform)

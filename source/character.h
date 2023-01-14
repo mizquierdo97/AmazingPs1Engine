@@ -7,7 +7,7 @@
 #include "dcLibPsx/include/dcLevel.h"
 
 
-void UpdateCharacter(SDC_Character* Character);
+void UpdateCharacter(SDC_Character* Character, SDC_Level* Level);
 
 
 #endif
