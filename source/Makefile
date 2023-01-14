@@ -19,6 +19,7 @@ SRCS = main.c\
 		textures/colorpallete.tim\
 		data/accept.vag data/beep.vag data/bell.vag\
 		projectile.c\
+		explotion.c\
 		textures/Letra_A.tim\
 		textures/Pala.tim\
 		textures/floor_texture.tim\

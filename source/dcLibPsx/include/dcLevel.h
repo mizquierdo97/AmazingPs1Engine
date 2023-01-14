@@ -25,6 +25,7 @@ typedef struct SDC_Object
 
 typedef struct SDC_Projectile
 {
+    int Dmg;
     int Vox;
     int Vy;
     int Voy;
@@ -36,8 +37,23 @@ typedef struct SDC_Projectile
     SDC_DrawParams* DrawParams;
 }SDC_Projectile;
 
+typedef struct SDC_Explotion
+{
+    int ExpansionSpeed;
+    int InitRadius;
+    int CurrentRadius;
+    int MaxRadius;
+    int bHasCollision;
+    SDC_Mesh3D* Mesh;
+    VECTOR Location;
+    SVECTOR Rotation;
+    SDC_DrawParams* DrawParams;
+
+}SDC_Explotion;
+
 typedef struct  SDC_Character
 {
+    int Lifes;
     int PlayerIndex;
     VECTOR Location;
     SVECTOR Rotation;
@@ -75,8 +91,10 @@ typedef struct SDC_Level
     SDC_Object** Objects;
     SDC_Character** Characters;
     SDC_Projectile** Projectiles;
+    SDC_Explotion** Explotions;
     int NumCharacters;
     int NumProjectiles;
+    int NumExplotions;
     int NumObjects;
     int MaxObjects;
 
@@ -104,10 +122,12 @@ void dcLevel_SetLight(SDC_Level* Level, int LightIndex, SVECTOR* LightDirection,
 SDC_Object* dcLevel_AddObject(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Rotation, SDC_DrawParams* DrawParams, SDC_Object* Parent, int bHasCollision, VECTOR* BoxHalfCollision);
 SDC_Object* dcLevel_AddObjectOnCharacter(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Rotation, SDC_DrawParams* DrawParams, SDC_Character* Parent, int bHasCollision, VECTOR* BoxHalfCollision);
 
+void dcLevel_AddExplotion(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR Location, SDC_DrawParams* DrawParams);
 void dcLevel_AddProjectile(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Direction, int Strength,  SDC_DrawParams* DrawParams);
 void dcLevel_DestroyProjectile(SDC_Level* Level, int i);
 
 SDC_Character* dcLevel_InitCharacter(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC_DrawParams* DrawParams);
 void GetParentTransform(SDC_Object* Object, MATRIX* Transform, MATRIX* OutTransform);
+void dcLevel_DestroyExplotion(SDC_Level* Level, int i);
 
 #endif /* _DC_LEVEL_H */

@@ -21,6 +21,7 @@
 #include "dcAudio.h"
 #include "dcRender.h"
 #include "projectile.h"
+#include "explotion.h"
 #include "../third_party/modplayer/modplayer.h"
 
 // cubo letras👍
@@ -329,13 +330,18 @@ void Display(SDC_Render* InRender, SDC_Camera* InCamera)
     for(int i = 0; i < MainLevel.NumProjectiles; i++)
     {
         MATRIX WorldTransform;
-        //MainLevel.Objects[i]->Rotation.vy += 10;
         RotMatrix(&MainLevel.Projectiles[i]->Rotation, &WorldTransform);
         TransMatrix(&WorldTransform,  &MainLevel.Projectiles[i]->Location);
-        //GetParentTransform(MainLevel.Projectiles[i], &Transform, &WorldTransform);
-
         dcRender_PreDrawMesh(&MainLevel, InCamera, &MainLevel.Projectiles[i]->Location, &MainLevel.Projectiles[i]->Rotation, &WorldTransform);
         dcRender_DrawMesh(InRender, MainLevel.Projectiles[i]->Mesh, &WorldTransform, MainLevel.Projectiles[i]->DrawParams);
+    }
+        for(int i = 0; i < MainLevel.NumExplotions; i++)
+    {
+        MATRIX WorldTransform;
+        RotMatrix(&MainLevel.Explotions[i]->Rotation, &WorldTransform);
+        TransMatrix(&WorldTransform,  &MainLevel.Explotions[i]->Location);
+        dcRender_PreDrawMesh(&MainLevel, InCamera, &MainLevel.Explotions[i]->Location, &MainLevel.Explotions[i]->Rotation, &WorldTransform);
+        dcRender_DrawMesh(InRender, MainLevel.Explotions[i]->Mesh, &WorldTransform, MainLevel.Explotions[i]->DrawParams);
     }
     dcRender_SwapBuffers(InRender);
 }
@@ -397,6 +403,11 @@ int main(void)
     {
         UpdateProjectile(&MainLevel, MainLevel.Projectiles[i], i);
     }
+        for(int i = 0; i < MainLevel.NumExplotions; i++)
+    {
+        UpdateExplotion(&MainLevel, MainLevel.Explotions[i], i);
+    }
+    
         Input(); 
         Display(&Render, &Camera);       
         Display(&FirstPlayerRender, &FirstPlayerCamera);
