@@ -56,8 +56,8 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
         {
             Character->bDoingParry = 1;
             Character->ParryCurrentFrame = 0;
-           Character->ParryFrames = 30;
            Character->ParryCurrentCooldown = Character->ParryCooldown;
+           Character->Pala->Scale = (VECTOR){ONE,ONE,ONE};
         }
 
     }
@@ -97,10 +97,12 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
      { 
         printf("Doing Parry %i --- %i\n", Character->ParryCurrentFrame, Character->ParryFrames);
         Character->ParryCurrentFrame++;
+        Character->Rotation.vy -= ONE / Character->ParryFrames;
         if(Character->ParryCurrentFrame >= Character->ParryFrames)
         {
         printf("Stop Parry \n");
-            Character->bDoingParry = 0;
+            Character->bDoingParry = 0;            
+           Character->Pala->Scale = (VECTOR){0,0,0};
         }
         for(int i = 0; i < Level->NumProjectiles; i++)
         {

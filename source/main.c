@@ -206,34 +206,34 @@ void InitLevel()
 
 
 
-    VECTOR palaLocation = {200,0, 200, 0};
-    
+    VECTOR palaLocation = {10,50, 0, 0};   
 
 
-    VECTOR CharacterInitialLocation = {100,0, 0, 0};
+    VECTOR CharacterInitialLocation = {150,0, 0, 0};
     VECTOR Character2InitialLocation = {-100, 0, 0, 0};
     
     VECTOR BoxHalfSize = {20,20,20};
-    SDC_Object* Parent = dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocarion, DrawParamsPtr, NULL, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation4, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation5, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation6, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation7, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation8, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation9, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation10, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation11, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation12, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation13, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation16, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation17, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation18, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation19, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation20, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation21, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation22, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation23, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation24, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    SVECTOR BoxRotation = {0,0,0};
+    SDC_Object* Parent = dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocarion, &BoxRotation, DrawParamsPtr, NULL, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation4,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation5, &BoxRotation,DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation6,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation7,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation8, &BoxRotation,DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation9,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation10,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation11,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation12,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation13,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation16,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation17, &BoxRotation,DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation18,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation19,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation20,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation21,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation22,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation23,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation24,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
 
 
     
@@ -247,9 +247,15 @@ VECTOR nullbox = {0,0,0};
     SDC_Character* FirstCharacter = dcLevel_InitCharacter(&MainLevel, &body_Mesh, &CharacterInitialLocation, DrawParamsCrashPtr);
     dcLevel_InitCharacter(&MainLevel, &body_Mesh, &Character2InitialLocation, DrawParamsCrashPtr2);    
     //el bonifacio
+<<<<<<< HEAD
     dcLevel_AddObjectOnCharacter(&MainLevel, &Bonifacio_Mesh, &palaLocation, DrawParamsPalaPtr, FirstCharacter, 1 ,&BoxHalfSize);
     
 
+=======
+    SVECTOR PalaRotation = {2048, 0 ,1024};
+    SDC_Object* Pala = dcLevel_AddObjectOnCharacter(&MainLevel, &Bonifacio_Mesh, &palaLocation, &PalaRotation, DrawParamsPalaPtr, FirstCharacter, 1 ,&BoxHalfSize);
+    FirstCharacter->Pala = Pala;
+>>>>>>> 367a0290db16836581ccee006e406590c025be2a
 }       
 
 void Display(SDC_Render* InRender, SDC_Camera* InCamera)
@@ -265,6 +271,7 @@ void Display(SDC_Render* InRender, SDC_Camera* InCamera)
             SVECTOR CameraLocation = MainLevel.Characters[i]->FrontVector;
             dcCamera_SetCameraPosition(InCamera, MainLevel.Characters[i]->Location.vx + CameraLocation.vx / 20, MainLevel.Characters[i]->Location.vy + 200, MainLevel.Characters[i]->Location.vz + CameraLocation.vz / 20);
             VECTOR LookAt =  MainLevel.Characters[i]->Location;
+            LookAt.vy += 150;
             dcCamera_LookAt(InCamera, &LookAt);
         }
         RotMatrix(&MainLevel.Characters[i]->Rotation, &CharacterTransform);
@@ -282,10 +289,14 @@ void Display(SDC_Render* InRender, SDC_Camera* InCamera)
         //MainLevel.Objects[i]->Rotation.vy += 10;
         RotMatrix(&MainLevel.Objects[i]->Rotation, &Transform);
         TransMatrix(&Transform,  &MainLevel.Objects[i]->Location);
+        ScaleMatrixL(&Transform, &MainLevel.Objects[i]->Scale);
         if(MainLevel.Objects[i]->CharacterParent != NULL)
         {
-            RotMatrix(&MainLevel.Objects[i]->CharacterParent->Rotation, &Transform);
-            TransMatrix(&Transform, &MainLevel.Objects[i]->CharacterParent->Location);
+            
+            RotMatrix(&MainLevel.Objects[i]->CharacterParent->Rotation, &WorldTransform);
+            TransMatrix(&WorldTransform, &MainLevel.Objects[i]->CharacterParent->Location);            
+            
+            CompMatrix(&WorldTransform, &Transform, &WorldTransform);
         }
         else
         {

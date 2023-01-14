@@ -31,18 +31,18 @@ void dcLevel_SetLight(SDC_Level* Level, int LightIndex, SVECTOR* LightDirection,
 
 }
 
-SDC_Object* dcLevel_AddObject(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC_DrawParams* DrawParams, SDC_Object* Parent, int bHasCollision, VECTOR* BoxHalfCollision)
+SDC_Object* dcLevel_AddObject(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Rotation, SDC_DrawParams* DrawParams, SDC_Object* Parent, int bHasCollision, VECTOR* BoxHalfCollision)
 {
     SDC_Object* Obj = malloc3(sizeof(SDC_Object));
     Obj->Location = *Location; //<----- to Transform
-    SVECTOR Rot = {0,0,0};
-    Obj->Rotation =Rot;
+    Obj->Rotation = *Rotation;
+    Obj->Scale = (VECTOR){ONE,ONE,ONE};
     Obj->Mesh = Mesh;
     Obj->DrawParams = DrawParams;
     Obj->Parent = Parent;
     Obj->bHasCollision = bHasCollision;
     Obj->BoxHalfSize = *BoxHalfCollision;
-    
+    Obj->CharacterParent = NULL;
     //Malloc for every object? or with MaxArray size?
     Level->Objects = realloc3(Level->Objects, (Level->NumObjects + 1) * sizeof(SDC_Object*));
 
@@ -52,12 +52,11 @@ SDC_Object* dcLevel_AddObject(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR* Locati
     return Obj;
 }
 
-SDC_Object* dcLevel_AddObjectOnCharacter(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC_DrawParams* DrawParams, SDC_Character* Parent, int bHasCollision, VECTOR* BoxHalfCollision)
+SDC_Object* dcLevel_AddObjectOnCharacter(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Rotation, SDC_DrawParams* DrawParams, SDC_Character* Parent, int bHasCollision, VECTOR* BoxHalfCollision)
 {    
     SDC_Object* Obj = malloc3(sizeof(SDC_Object));
     Obj->Location = *Location; //<----- to Transform
-    SVECTOR Rot = {0,0,0};
-    Obj->Rotation =Rot;
+    Obj->Rotation = *Rotation;
     Obj->Mesh = Mesh;
     Obj->DrawParams = DrawParams;
     Obj->CharacterParent = Parent;
@@ -85,6 +84,7 @@ SDC_Character* dcLevel_InitCharacter(SDC_Level *Level, SDC_Mesh3D *Mesh, VECTOR 
     NewCharacter->bDoingParry = 0;
     NewCharacter->bHoldingFire = 0;
     NewCharacter->bDoingDash = 0;
+    NewCharacter->ParryFrames = 6;
      NewCharacter->ParryCooldown = 60;
      NewCharacter->ParryCurrentCooldown =0;
     //Malloc for every object? or with MaxArray size?
@@ -144,6 +144,8 @@ void GetParentTransform(SDC_Object* Object, MATRIX *Transform, MATRIX *OutTransf
     {
         RotMatrix(&Object->Rotation, OutTransform);
         TransMatrix(OutTransform, &Object->Location);
+        
+        ScaleMatrixL(OutTransform, &Object->Scale);
     }
 }
 
