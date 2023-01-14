@@ -12,6 +12,7 @@ typedef struct SDC_Character SDC_Character;
 typedef struct SDC_Object
 {
     VECTOR Location;
+    VECTOR Scale;
     SVECTOR Rotation;
     SDC_Mesh3D* Mesh;
     SDC_DrawParams* DrawParams;
@@ -44,6 +45,7 @@ typedef struct  SDC_Character
     SDC_DrawParams* DrawParams;
     SVECTOR FrontVector;
     short CameraAngle;
+    SDC_Object* Pala;
 
     //Abilities
     //Dash
@@ -97,8 +99,8 @@ MATRIX ColorMatrix;
 
 void dcLevel_InitLight(SDC_Level* Level, CVECTOR* AmbientColor);
 void dcLevel_SetLight(SDC_Level* Level, int LightIndex, SVECTOR* LightDirection, SVECTOR* LightColor);
-SDC_Object* dcLevel_AddObject(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC_DrawParams* DrawParams, SDC_Object* Parent, int bHasCollision, VECTOR* BoxHalfCollision);
-SDC_Object* dcLevel_AddObjectOnCharacter(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC_DrawParams* DrawParams, SDC_Character* Parent, int bHasCollision, VECTOR* BoxHalfCollision);
+SDC_Object* dcLevel_AddObject(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Rotation, SDC_DrawParams* DrawParams, SDC_Object* Parent, int bHasCollision, VECTOR* BoxHalfCollision);
+SDC_Object* dcLevel_AddObjectOnCharacter(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Rotation, SDC_DrawParams* DrawParams, SDC_Character* Parent, int bHasCollision, VECTOR* BoxHalfCollision);
 
 void dcLevel_AddProjectile(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Direction, int Strength,  SDC_DrawParams* DrawParams);
 void dcLevel_DestroyProjectile(SDC_Level* Level, int i);
