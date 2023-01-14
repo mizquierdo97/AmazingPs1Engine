@@ -87,10 +87,16 @@ SDC_Character* dcLevel_InitCharacter(SDC_Level *Level, SDC_Mesh3D *Mesh, VECTOR 
     NewCharacter->bHoldingFire = 0;
     NewCharacter->bDoingDash = 0;
 
-    NewCharacter->ParryFrames = 6;
+    NewCharacter->ParryFrames = 15;
      NewCharacter->ParryCooldown = 60;
      NewCharacter->ParryCurrentCooldown =0;
+
     NewCharacter->Lives = 3;
+
+     NewCharacter->DashCooldown = 60;
+     NewCharacter->DashCurrentCooldown = 0;
+          NewCharacter->FireCooldown = 15;
+     NewCharacter->FireCurrentCooldown = 0;
     
     //Malloc for every object? or with MaxArray size?
     Level->Characters = realloc3(Level->Characters, (Level->NumCharacters + 1) * sizeof(SDC_Object*));
@@ -107,8 +113,8 @@ void dcLevel_AddProjectile(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location,
     NewProjectile->Rotation =Rot;
     NewProjectile->Mesh = Mesh;
     NewProjectile->DrawParams = DrawParams;
-    NewProjectile->Vox = DC_MIN(DC_MAX(Strength/2, 10), 100);
-    NewProjectile->Voy = DC_MIN(DC_MAX(Strength/2, 10), 100);;
+    NewProjectile->Vox = DC_MIN(DC_MAX(Strength * 2, 10), 200);
+    NewProjectile->Voy = DC_MIN(DC_MAX(Strength, 5), 10);;
     NewProjectile->Vy = NewProjectile->Voy;
     NewProjectile->Direction = *Direction;
     NewProjectile->ExplosionRange = 30;
@@ -143,9 +149,8 @@ void dcLevel_DestroyProjectile(SDC_Level* Level, int i)
 {
     //Explode
     //Change DrawParams in the future
-    SDC_Mesh3D* sphere = dcMisc_generateSphereMesh(10,8,8);
     VECTOR Location = Level->Projectiles[i]->Location;
-    dcLevel_AddExplotion(Level, sphere, Location, Level->Projectiles[i]->DrawParams);
+    dcLevel_AddExplotion(Level, Level->ExplosionMesh, Location, Level->Projectiles[i]->DrawParams);
     //dcLevel_AddExplotion(Level, sphere, &Level->Projectiles[i]->Location, Level->Projectiles[i]->DrawParams, NULL, 0 ,NULL);
 
 

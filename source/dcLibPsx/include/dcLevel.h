@@ -47,6 +47,7 @@ typedef struct SDC_Explotion
     SDC_Mesh3D* Mesh;
     VECTOR Location;
     SVECTOR Rotation;
+    VECTOR Scale;
     SDC_DrawParams* DrawParams;
 
 }SDC_Explotion;
@@ -65,6 +66,7 @@ typedef struct  SDC_Character
     SDC_Object* Pala;
     TIM_IMAGE* tim_projectile;
 
+    MATRIX WorldTransform;
     //Abilities
     //Dash
     int bDoingDash;
@@ -72,10 +74,16 @@ typedef struct  SDC_Character
     int DashDistance;
     int DashVelocity;
 
+    int DashCooldown;
+    int DashCurrentCooldown;
+
     //Fire
     int bHoldingFire;
     int ProjectileSpeed;
     int ProjectileStrength;
+    
+    int FireCooldown;
+    int FireCurrentCooldown;
 
     //Parry
     int bDoingParry;
@@ -97,6 +105,7 @@ typedef struct SDC_Level
     int NumExplotions;
     int NumObjects;
     int MaxObjects;
+    SDC_Mesh3D* ExplosionMesh;
 
 // Back color  
 CVECTOR  AmbientColor;

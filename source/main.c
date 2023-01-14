@@ -35,7 +35,7 @@
 //#include "meshes/left_eye.h"
 //#include "meshes/right_eye.h"
 #include "meshes/Bonifacio.h"
-#include "meshes/floor_mesh.h"
+//#include "meshes/floor_mesh.h"
 
 
 
@@ -73,8 +73,8 @@ void InitGame()
     int  height = 240;
 
     CVECTOR bgColor = {60, 120, 120};        
-    dcRender_Init(&Render, width, height, bgColor, 4096 * 4, 8192 * 10, RENDER_MODE_PAL, 1);
-    dcRender_Init(&FirstPlayerRender, width, height, bgColor, 4096 * 4, 8192 * 10, RENDER_MODE_PAL, 0);
+    dcRender_Init(&Render, width, height, bgColor, 4096, 8192 * 6, RENDER_MODE_PAL, 1);
+    dcRender_Init(&FirstPlayerRender, width, height, bgColor, 4096, 8192 * 6 , RENDER_MODE_PAL, 0);
     dcCamera_SetScreenResolution(&Camera, width, height);
     Camera.PlayerCameraIndex = 0;
     dcCamera_SetScreenResolution(&FirstPlayerCamera, width, height);
@@ -86,7 +86,6 @@ void InitGame()
 //This should go to a separate .h so we can modify the level without having conflicts
 void InitLevel()
 {    
-
 
     //dcAudio_MusicPlay(&audio, 0);
 
@@ -124,7 +123,7 @@ void InitLevel()
     TIM_IMAGE* tim_Pala = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));    
     TIM_IMAGE* tim_floor = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
 
-
+    MainLevel.ExplosionMesh = dcMisc_generateSphereMesh(200,2,2);
     //We can move this structure initialization to a function
     SDC_DrawParams DrawParamsCrash = {
         .tim = tim_smile,
@@ -181,10 +180,10 @@ void InitLevel()
 
     //localizaciones cajas para luego crear los actores
     VECTOR BoxLocarion = {000,0, 0, 0};
-    VECTOR BoxLocation4 = {375,125, 0, 0};
+    VECTOR BoxLocation4 = {375,0, 0, 0};
     VECTOR BoxLocation5 = {-125,0, 125, 0};
     VECTOR BoxLocation6 = {-125,0, 250, 0};
-    VECTOR BoxLocation7 = {-125,0, 375, 0};
+    /*VECTOR BoxLocation7 = {-125,0, 375, 0};
     VECTOR BoxLocation8 = {0,125, 0, 0};
     VECTOR BoxLocation9 = {375,0, 0, 0};
     VECTOR BoxLocation10 = {500,0, 125, 0};
@@ -202,13 +201,7 @@ void InitLevel()
     VECTOR BoxLocation22 = {500,0, -625, 0};
     VECTOR BoxLocation23 = {500,0, -750, 0};
     VECTOR BoxLocation24 = {500,0, -875, 0};
-
-
-    
-
-
-
-
+*/
     VECTOR palaLocation = {10,50, 0, 0};   
 
 
@@ -221,7 +214,7 @@ void InitLevel()
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation4,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation5, &BoxRotation,DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation6,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation7,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    /*dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation7,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation8, &BoxRotation,DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation9,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation10,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
@@ -236,13 +229,13 @@ void InitLevel()
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation21,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation22,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation23,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation24,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize); 
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation24,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize); */
     
 
 
-VECTOR nullbox = {0,0,0};
-VECTOR floorLocation = {0,-100,0};
-    dcLevel_AddObject(&MainLevel, &floor_mesh_Mesh, &floorLocation,&BoxRotation, DrawParamsFloorPtr, NULL, 0 ,&nullbox);
+//VECTOR nullbox = {0,0,0};
+//VECTOR floorLocation = {0,-100,0};
+    //dcLevel_AddObject(&MainLevel, &floor_mesh_Mesh, &floorLocation,&BoxRotation, DrawParamsFloorPtr, NULL, 0 ,&nullbox);
     
         
     SDC_Character* FirstCharacter = dcLevel_InitCharacter(&MainLevel, &body_Mesh, &CharacterInitialLocation, DrawParamsCrashPtr);
@@ -252,8 +245,10 @@ VECTOR floorLocation = {0,-100,0};
     SVECTOR PalaRotation = {2048, 0 ,1024};
     SDC_Object* Pala = dcLevel_AddObjectOnCharacter(&MainLevel, &Bonifacio_Mesh, &palaLocation, &PalaRotation, DrawParamsPalaPtr, FirstCharacter, 1 ,&BoxHalfSize);
     FirstCharacter->Pala = Pala;
+    SDC_Object* Pala2 = dcLevel_AddObjectOnCharacter(&MainLevel, &Bonifacio_Mesh, &palaLocation, &PalaRotation, DrawParamsPalaPtr, SecondCharacter, 1 ,&BoxHalfSize);
+    FirstCharacter->Pala = Pala;
     FirstCharacter->tim_projectile = tim_smile;
-        SecondCharacter->Pala = Pala;
+        SecondCharacter->Pala = Pala2;
     SecondCharacter->tim_projectile = tim_smile;
 
     MATRIX Transform;
@@ -273,54 +268,34 @@ VECTOR floorLocation = {0,-100,0};
             GetParentTransform(MainLevel.Objects[i], &Transform, &WorldTransform);
         }
         MainLevel.Objects[i]->WorldTransform = WorldTransform;
-    }
-
-    
+    }    
 }       
 
 void Display(SDC_Render* InRender, SDC_Camera* InCamera)
 {
 
-    MATRIX CharacterTransform;
 
+     MATRIX OutTransform;
     for(int i = 0; i < MainLevel.NumCharacters; i++)
     {
+        
         //Draw UI:
         CVECTOR fontColor = {127, 127, 127};
         char PlayerTxt[256];
         sprintf(PlayerTxt, "LIVES: %i\n", MainLevel.Characters[i]->Lives);
-        VECTOR TxtPos = {500,100};
-
-        bool bIsLocalPlayer = InCamera->PlayerCameraIndex == i;
-        if(bIsLocalPlayer)
-        {
-            UpdateCharacter(MainLevel.Characters[i], &MainLevel);
-            SVECTOR CameraLocation = MainLevel.Characters[i]->FrontVector;
-            dcCamera_SetCameraPosition(InCamera, MainLevel.Characters[i]->Location.vx + CameraLocation.vx / 20, MainLevel.Characters[i]->Location.vy + 200, MainLevel.Characters[i]->Location.vz + CameraLocation.vz / 20);
-            VECTOR LookAt =  MainLevel.Characters[i]->Location;
-            LookAt.vy += 150;
-            dcCamera_LookAt(InCamera, &LookAt);
-            TxtPos.vx = 50;
-            TxtPos.vy = 200;
-        }
-        //TODO save in first time;
-        RotMatrix(&MainLevel.Characters[i]->Rotation, &CharacterTransform);
-        TransMatrix(&CharacterTransform,  &MainLevel.Characters[i]->Location);
-        dcRender_PreDrawMesh(&MainLevel, InCamera, &MainLevel.Characters[i]->Location, &MainLevel.Characters[i]->Rotation, &CharacterTransform);
-        dcRender_DrawMesh(InRender, MainLevel.Characters[i]->Mesh, &CharacterTransform, MainLevel.Characters[i]->DrawParams);
-
+        VECTOR TxtPos = {100,10};
         dcFont_Print(InRender, TxtPos.vx, TxtPos.vy,&fontColor,PlayerTxt);
 
- 
+          dcCamera_ApplyCameraTransform(InCamera,  &MainLevel.Characters[i]->WorldTransform,  &OutTransform);
 
-        //FntPrint("TESTING:\n");
+         dcRender_DrawMesh(InRender, MainLevel.Characters[i]->Mesh, &OutTransform, MainLevel.Characters[i]->DrawParams);        
     }
+
 
 
     //Draw Objects
    for(int i = 0; i < MainLevel.NumObjects; i++)
     {
-        MATRIX WorldTransform;
         if(MainLevel.Objects[i]->CharacterParent != NULL )
         {
             if(MainLevel.Objects[i]->WorldTransform.m[0][0] != 0 || MainLevel.Objects[i]->WorldTransform.m[1][1] != 0)
@@ -330,72 +305,41 @@ void Display(SDC_Render* InRender, SDC_Camera* InCamera)
             TransMatrix(&Transform,  &MainLevel.Objects[i]->Location);
             ScaleMatrixL(&Transform, &MainLevel.Objects[i]->Scale);
             
-            RotMatrix(&MainLevel.Objects[i]->CharacterParent->Rotation, &WorldTransform);
-            TransMatrix(&WorldTransform, &MainLevel.Objects[i]->CharacterParent->Location);     
+            RotMatrix(&MainLevel.Objects[i]->CharacterParent->Rotation, &OutTransform);
+            TransMatrix(&OutTransform, &MainLevel.Objects[i]->CharacterParent->Location);     
             
-            CompMatrix(&WorldTransform, &Transform, &WorldTransform);   
+            CompMatrix(&OutTransform, &Transform, &OutTransform);   
             }
         }
         else{
             
-        WorldTransform = MainLevel.Objects[i]->WorldTransform;
+        OutTransform = MainLevel.Objects[i]->WorldTransform;
         }
 
-        dcRender_PreDrawMesh(&MainLevel, InCamera, &MainLevel.Objects[i]->Location, &MainLevel.Objects[i]->Rotation, &WorldTransform);
-        
-        //dcCamera_ApplyCameraTransform(InCamera,  &WorldTransform,  &WorldTransform);
-        dcRender_DrawMesh(InRender, MainLevel.Objects[i]->Mesh, &WorldTransform, MainLevel.Objects[i]->DrawParams);
+        dcCamera_ApplyCameraTransform(InCamera,  &OutTransform,  &OutTransform);
+        dcRender_DrawMesh(InRender, MainLevel.Objects[i]->Mesh, &OutTransform, MainLevel.Objects[i]->DrawParams);
     }
 
     for(int i = 0; i < MainLevel.NumProjectiles; i++)
     {
-        MATRIX WorldTransform;
-        RotMatrix(&MainLevel.Projectiles[i]->Rotation, &WorldTransform);
-        TransMatrix(&WorldTransform,  &MainLevel.Projectiles[i]->Location);
-        dcRender_PreDrawMesh(&MainLevel, InCamera, &MainLevel.Projectiles[i]->Location, &MainLevel.Projectiles[i]->Rotation, &WorldTransform);
-        dcRender_DrawMesh(InRender, MainLevel.Projectiles[i]->Mesh, &WorldTransform, MainLevel.Projectiles[i]->DrawParams);
+        RotMatrix(&MainLevel.Projectiles[i]->Rotation, &OutTransform);
+        TransMatrix(&OutTransform,  &MainLevel.Projectiles[i]->Location);         
+        dcCamera_ApplyCameraTransform(InCamera,  &OutTransform,  &OutTransform);
+        dcRender_DrawMesh(InRender, MainLevel.Projectiles[i]->Mesh, &OutTransform, MainLevel.Projectiles[i]->DrawParams);
     }
         for(int i = 0; i < MainLevel.NumExplotions; i++)
     {
-        MATRIX WorldTransform;
-        RotMatrix(&MainLevel.Explotions[i]->Rotation, &WorldTransform);
-        TransMatrix(&WorldTransform,  &MainLevel.Explotions[i]->Location);
-        dcRender_PreDrawMesh(&MainLevel, InCamera, &MainLevel.Explotions[i]->Location, &MainLevel.Explotions[i]->Rotation, &WorldTransform);
-        dcRender_DrawMesh(InRender, MainLevel.Explotions[i]->Mesh, &WorldTransform, MainLevel.Explotions[i]->DrawParams);
+        RotMatrix(&MainLevel.Explotions[i]->Rotation, &OutTransform);
+        TransMatrix(&OutTransform,  &MainLevel.Explotions[i]->Location);
+        ScaleMatrix(&OutTransform,  &MainLevel.Explotions[i]->Scale);
+        dcCamera_ApplyCameraTransform(InCamera,  &OutTransform,  &OutTransform);
+        //dcRender_PreDrawMesh(&MainLevel, InCamera, &MainLevel.Explotions[i]->Location, &MainLevel.Explotions[i]->Rotation, &WorldTransform);
+        dcRender_DrawMesh(InRender, MainLevel.Explotions[i]->Mesh, &OutTransform, MainLevel.Explotions[i]->DrawParams);
     }
     dcRender_SwapBuffers(InRender);
 
 }
 
-void Input()
-{
-    
-    u_long PadState = PadRead(0);
-    if( _PAD(0,PADLup ) & PadState )
-    {
-    }
-    if( _PAD(0,PADLdown ) & PadState )
-    {
-    }
-    if( _PAD(0,PADLright ) & PadState )
-    {
-    }
-    if( _PAD(0,PADLleft ) & PadState )
-    {
-    }
-    if( _PAD(0,PADRup ) & PadState )
-    {
-    }
-    if( _PAD(0,PADRdown ) & PadState )
-    {
-    }
-    if( _PAD(0,PADRright ) & PadState )
-    {
-    }
-    if( _PAD(0,PADRleft ) & PadState )
-    {
-    }
-}
 
 int main(void) 
 {    
@@ -410,28 +354,54 @@ int main(void)
     //dcAudio_SfxLoad(&audio, &beepSfx, (u_char *)_binary_data_beep_vag_start); 
     RotMatrix_gte(&MainLevel.LightAngle, &MainLevel.RotLight);
 
+SVECTOR ObjectNullRotation = {0,0,0};
+        RotMatrix_gte(&MainLevel.LightAngle, &MainLevel.RotLight);
+        RotMatrix_gte(&ObjectNullRotation, &MainLevel.RotObject);  
+        // RotMatrix cube * RotMatrix light
+        MulMatrix0(&MainLevel.RotObject, &MainLevel.RotLight, &MainLevel.RotLight);
+        // Light Matrix * RotMatrix light 
+        MulMatrix0(&MainLevel.LocalLightMatrix, &MainLevel.RotLight, &MainLevel.WorldLightMatrix);
+        // Set new light matrix 
+        SetLightMatrix(&MainLevel.WorldLightMatrix);     
     while (1) 
-    {            
+    {       
+
     // Init Pad
    
     // Store input values    
 
-        VSync( 0 );
-        DrawSync( 0 );
-        SetDispMask( 1 );
+
 
     for(int i = 0; i < MainLevel.NumProjectiles; i++)
     {
+        //printf("AAAA\n");
         UpdateProjectile(&MainLevel, MainLevel.Projectiles[i], i);
     }
         for(int i = 0; i < MainLevel.NumExplotions; i++)
     {
         UpdateExplotion(&MainLevel, MainLevel.Explotions[i], i);
     }
-    
-        Input(); 
-        Display(&Render, &Camera);       
-        Display(&FirstPlayerRender, &FirstPlayerCamera);
+
+    for(int i = 0; i < MainLevel.NumCharacters; i++)
+    {
+        SDC_Camera* InCamera = i == 0 ? &Camera : &FirstPlayerCamera;
+            UpdateCharacter(MainLevel.Characters[i], &MainLevel);
+            SVECTOR CameraLocation = MainLevel.Characters[i]->FrontVector;
+            dcCamera_SetCameraPosition(InCamera, MainLevel.Characters[i]->Location.vx + CameraLocation.vx / 20, MainLevel.Characters[i]->Location.vy + 200, MainLevel.Characters[i]->Location.vz + CameraLocation.vz / 20);
+            VECTOR LookAt =  MainLevel.Characters[i]->Location;
+            LookAt.vy += 150;
+            dcCamera_LookAt(InCamera, &LookAt);
+            
+            RotMatrix(&MainLevel.Characters[i]->Rotation, &MainLevel.Characters[i]->WorldTransform);            
+            TransMatrix(&MainLevel.Characters[i]->WorldTransform,  &MainLevel.Characters[i]->Location);
+           
+    }
+        Display(&Render, &Camera);
+         Display(&FirstPlayerRender, &FirstPlayerCamera);
+         
+        VSync( 0 );
+        DrawSync( 0 );
+        SetDispMask( 1 );
     }
 
     return 0;
