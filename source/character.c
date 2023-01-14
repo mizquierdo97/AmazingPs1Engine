@@ -2,8 +2,8 @@
 #include "dcCollision.h"
 #include <stdio.h>
 #include "dcRender.h"
-#include "meshes/Box001.h"
 #include "dcMath.h"
+#include "meshes/Proyectil.h"
 
 void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
 {
@@ -74,7 +74,7 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
             //FIRE
             //We can move this structure initialization to a function
             SDC_DrawParams DrawParams = {
-                .tim = NULL,
+                .tim = Character->tim_projectile,
                 .constantColor = {255, 255, 255},
                 .bLighting = 1,
                 .bUseConstantColor = 1
@@ -83,10 +83,7 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
             SDC_DrawParams* DrawParamsPtr = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
             *DrawParamsPtr = DrawParams;
 
-
-
-            //dcLevel_AddObject(&MainLevel, &Box001_Mesh, &MainLevel.Characters[i]->Location, DrawParamsPtr, NULL); 
-            dcLevel_AddProjectile(Level, &Box001_Mesh, &Character->Location, &Character->FrontVector, Character->ProjectileStrength, DrawParamsPtr); 
+            dcLevel_AddProjectile(Level, &Proyectil_Mesh, &Character->Location, &Character->FrontVector, Character->ProjectileStrength, DrawParamsPtr); 
             Character->bHoldingFire = 0;
             Character->ProjectileStrength = 0;
         }
@@ -95,12 +92,10 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
      VECTOR FutureLocation = {Character->Location.vx, Character->Location.vy, Character->Location.vz};
      if(Character->bDoingParry)
      { 
-        printf("Doing Parry %i --- %i\n", Character->ParryCurrentFrame, Character->ParryFrames);
         Character->ParryCurrentFrame++;
         Character->Rotation.vy -= ONE / Character->ParryFrames;
-        if(Character->ParryCurrentFrame >= Character->ParryFrames)
+        if(Character->ParryCurrentFrame > Character->ParryFrames)
         {
-        printf("Stop Parry \n");
             Character->bDoingParry = 0;            
            Character->Pala->Scale = (VECTOR){0,0,0};
         }
@@ -110,16 +105,14 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
             VECTOR CharacterLocation = Character->Location;
             VECTOR Diff = {ProjectileLocation.vx - CharacterLocation.vx,ProjectileLocation.vy - CharacterLocation.vy,ProjectileLocation.vz - CharacterLocation.vz};
             int Dist =  SquareRoot12( DC_MUL(Diff.vx , Diff.vx) + DC_MUL(Diff.vy , Diff.vy) + DC_MUL(Diff.vz , Diff.vz));
-            printf("%i \n", Dist);
+ 
             if(Dist  < 100)
             {
-                printf("PARRYYYYYY! \n");
                 SVECTOR Dir = Level->Projectiles[i]->Direction;
                 Level->Projectiles[i]->Direction = (SVECTOR){-Dir.vx, -Dir.vy, -Dir.vz};
                 Level->Projectiles[i]->Vox *= 3;
                 Level->Projectiles[i]->Vy = 0;
                 Character->bDoingParry = 0;
-                //Parry
             }
         }
      }
@@ -144,8 +137,10 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
     }
     else if(IncrementalPosition.vx != 0 || IncrementalPosition.vz != 0)
     {
-        
-    SVECTOR Dir;    
+    
+    if(!Character->bDoingParry)
+    {
+      SVECTOR Dir;    
     VectorNormalSS(&IncrementalPosition, &Dir);
     SVECTOR Diff = {Dir.vx -  Character->Direction.vx,Dir.vy -  Character->Direction.vy,Dir.vz -  Character->Direction.vz};
     int LerpSpeed = 8;
@@ -155,15 +150,19 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
 
     long atan2 = ratan2(Character->Direction.vx, Character->Direction.vz);
     Character->Rotation.vy = atan2;
-       
+    }
         FutureLocation.vx = Character->Location.vx + IncrementalPosition.vx;    
         FutureLocation.vz =  Character->Location.vz + IncrementalPosition.vz;
     }
 
      int bCanMove = 1;
+    VECTOR CharacterLocation = Character->Location;
     for(int i = 0; i < Level->NumObjects; i++)
     {
-       
+        VECTOR ObjectLocation = Level->Objects[i]->Location;
+       VECTOR Dist = {ObjectLocation.vx - CharacterLocation.vx,ObjectLocation.vy - CharacterLocation.vy,ObjectLocation.vz - CharacterLocation.vz};
+    if(Dist.vx > 200 || Dist.vz > 200)
+    continue;
         if(dcCollision_SphereOverlapBox(&FutureLocation, 50, &Level->Objects[i]->Location, &Level->Objects[i]->BoxHalfSize))
         {
             bCanMove = 0;

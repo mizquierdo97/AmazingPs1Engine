@@ -22,7 +22,6 @@
 #include "dcRender.h"
 #include "projectile.h"
 #include "../third_party/modplayer/modplayer.h"
-//#include "meshes/Box001.h"
 
 // cubo letras👍
 #include "meshes/Box003.h"
@@ -233,24 +232,46 @@ void InitLevel()
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation21,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation22,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation23,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation24,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-
-
-    
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation24,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize); 
     
 
 
 VECTOR nullbox = {0,0,0};
-    dcLevel_AddObject(&MainLevel, &floor_mesh_Mesh, &BoxLocarion,&BoxRotation, DrawParamsFloorPtr, NULL, 0 ,&nullbox);
+VECTOR floorLocation = {0,-100,0};
+    dcLevel_AddObject(&MainLevel, &floor_mesh_Mesh, &floorLocation,&BoxRotation, DrawParamsFloorPtr, NULL, 0 ,&nullbox);
     
         
     SDC_Character* FirstCharacter = dcLevel_InitCharacter(&MainLevel, &body_Mesh, &CharacterInitialLocation, DrawParamsCrashPtr);
-    dcLevel_InitCharacter(&MainLevel, &body_Mesh, &Character2InitialLocation, DrawParamsCrashPtr2);    
+     SDC_Character* SecondCharacter =dcLevel_InitCharacter(&MainLevel, &body_Mesh, &Character2InitialLocation, DrawParamsCrashPtr2);    
     //el bonifacio
 
     SVECTOR PalaRotation = {2048, 0 ,1024};
     SDC_Object* Pala = dcLevel_AddObjectOnCharacter(&MainLevel, &Bonifacio_Mesh, &palaLocation, &PalaRotation, DrawParamsPalaPtr, FirstCharacter, 1 ,&BoxHalfSize);
     FirstCharacter->Pala = Pala;
+    FirstCharacter->tim_projectile = tim_smile;
+        SecondCharacter->Pala = Pala;
+    SecondCharacter->tim_projectile = tim_smile;
+
+    MATRIX Transform;
+   for(int i = 0; i < MainLevel.NumObjects; i++)
+    {  
+        MATRIX WorldTransform;
+        //MainLevel.Objects[i]->Rotation.vy += 10;
+        RotMatrix(&MainLevel.Objects[i]->Rotation, &Transform);
+        TransMatrix(&Transform,  &MainLevel.Objects[i]->Location);
+        ScaleMatrixL(&Transform, &MainLevel.Objects[i]->Scale);
+        if(MainLevel.Objects[i]->CharacterParent != NULL)
+        {
+
+        }
+        else
+        {
+            GetParentTransform(MainLevel.Objects[i], &Transform, &WorldTransform);
+        }
+        MainLevel.Objects[i]->WorldTransform = WorldTransform;
+    }
+
+    
 }       
 
 void Display(SDC_Render* InRender, SDC_Camera* InCamera)
@@ -269,36 +290,39 @@ void Display(SDC_Render* InRender, SDC_Camera* InCamera)
             LookAt.vy += 150;
             dcCamera_LookAt(InCamera, &LookAt);
         }
+        //TODO save in first time;
         RotMatrix(&MainLevel.Characters[i]->Rotation, &CharacterTransform);
         TransMatrix(&CharacterTransform,  &MainLevel.Characters[i]->Location);
         dcRender_PreDrawMesh(&MainLevel, InCamera, &MainLevel.Characters[i]->Location, &MainLevel.Characters[i]->Rotation, &CharacterTransform);
         dcRender_DrawMesh(InRender, MainLevel.Characters[i]->Mesh, &CharacterTransform, MainLevel.Characters[i]->DrawParams);
     }
     //Draw Objects
-    MATRIX Transform;
    for(int i = 0; i < MainLevel.NumObjects; i++)
-    {         /*
-        UPDATE OBJECTS?¿?¿
-        */
+    {
         MATRIX WorldTransform;
-        //MainLevel.Objects[i]->Rotation.vy += 10;
-        RotMatrix(&MainLevel.Objects[i]->Rotation, &Transform);
-        TransMatrix(&Transform,  &MainLevel.Objects[i]->Location);
-        ScaleMatrixL(&Transform, &MainLevel.Objects[i]->Scale);
-        if(MainLevel.Objects[i]->CharacterParent != NULL)
+        if(MainLevel.Objects[i]->CharacterParent != NULL )
         {
+            if(MainLevel.Objects[i]->WorldTransform.m[0][0] != 0 || MainLevel.Objects[i]->WorldTransform.m[1][1] != 0)
+            {
+            MATRIX Transform;
+            RotMatrix(&MainLevel.Objects[i]->Rotation, &Transform);
+            TransMatrix(&Transform,  &MainLevel.Objects[i]->Location);
+            ScaleMatrixL(&Transform, &MainLevel.Objects[i]->Scale);
             
             RotMatrix(&MainLevel.Objects[i]->CharacterParent->Rotation, &WorldTransform);
-            TransMatrix(&WorldTransform, &MainLevel.Objects[i]->CharacterParent->Location);            
+            TransMatrix(&WorldTransform, &MainLevel.Objects[i]->CharacterParent->Location);     
             
-            CompMatrix(&WorldTransform, &Transform, &WorldTransform);
+            CompMatrix(&WorldTransform, &Transform, &WorldTransform);   
+            }
         }
-        else
-        {
-        GetParentTransform(MainLevel.Objects[i], &Transform, &WorldTransform);
+        else{
+            
+        WorldTransform = MainLevel.Objects[i]->WorldTransform;
         }
 
         dcRender_PreDrawMesh(&MainLevel, InCamera, &MainLevel.Objects[i]->Location, &MainLevel.Objects[i]->Rotation, &WorldTransform);
+        
+        //dcCamera_ApplyCameraTransform(InCamera,  &WorldTransform,  &WorldTransform);
         dcRender_DrawMesh(InRender, MainLevel.Objects[i]->Mesh, &WorldTransform, MainLevel.Objects[i]->DrawParams);
     }
 
@@ -356,6 +380,7 @@ int main(void)
     //dcAudio_SfxLoad(&audio, &bellSfx, (u_char *)_binary_data_bell_vag_start);
     //dcAudio_SfxLoad(&audio, &acceptSfx, (u_char *)_binary_data_accept_vag_start);
     //dcAudio_SfxLoad(&audio, &beepSfx, (u_char *)_binary_data_beep_vag_start); 
+    RotMatrix_gte(&MainLevel.LightAngle, &MainLevel.RotLight);
 
     while (1) 
     {            
@@ -368,7 +393,6 @@ int main(void)
         SetDispMask( 1 );
 
 
-printf("HERE2!!!\n");
     for(int i = 0; i < MainLevel.NumProjectiles; i++)
     {
         UpdateProjectile(&MainLevel, MainLevel.Projectiles[i], i);
@@ -377,7 +401,6 @@ printf("HERE2!!!\n");
         Display(&Render, &Camera);       
         Display(&FirstPlayerRender, &FirstPlayerCamera);
         
-printf("HERE!!!\n");
     }
 
     return 0;

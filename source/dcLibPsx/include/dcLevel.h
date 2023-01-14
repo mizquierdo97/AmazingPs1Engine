@@ -20,6 +20,7 @@ typedef struct SDC_Object
     SDC_Character* CharacterParent;
     int bHasCollision;
     VECTOR BoxHalfSize;
+    MATRIX WorldTransform;
 }SDC_Object;
 
 typedef struct SDC_Projectile
@@ -46,6 +47,7 @@ typedef struct  SDC_Character
     SVECTOR FrontVector;
     short CameraAngle;
     SDC_Object* Pala;
+    TIM_IMAGE* tim_projectile;
 
     //Abilities
     //Dash

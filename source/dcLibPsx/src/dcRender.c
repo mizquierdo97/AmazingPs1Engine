@@ -408,7 +408,6 @@ void dcRender_DrawMesh(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform,
                     u_long Test =  getTPage(drawParams->tim->mode, 0, drawParams->tim->prect->x, drawParams->tim->prect->y);
                     polyGT3->tpage = Test;/*texture page*/
                     setClut(polyGT3,drawParams->tim->crect->x, drawParams->tim->crect->y);
-                   // polyGT3->clut = GetClut (; /*texture CLUT*/
                 }
                 nclip = RotAverageNclip3(&vertexs[index0].position, &vertexs[index1].position, &vertexs[index2].position,
                                         (long *)&polyGT3->x0, (long *)&polyGT3->x1, (long *)&polyGT3->x2, &p, &otz, &flg);
@@ -493,8 +492,7 @@ void dcRender_DrawLine(SDC_Render* render, SVECTOR* v0, SVECTOR* v1, MATRIX* tra
 
 void dcRender_PreDrawMesh(SDC_Level* Level, SDC_Camera* Camera, VECTOR *Location, SVECTOR *Rotation, MATRIX *Transform)
 {
-
-        RotMatrix_gte(&Level->LightAngle, &Level->RotLight);
+    RotMatrix_gte(&Level->LightAngle, &Level->RotLight);
         RotMatrix_gte(Rotation, &Level->RotObject);  
         // RotMatrix cube * RotMatrix light
         MulMatrix0(&Level->RotObject, &Level->RotLight, &Level->RotLight);
