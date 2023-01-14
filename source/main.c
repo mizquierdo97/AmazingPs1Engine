@@ -20,6 +20,7 @@
 #include "dcCollision.h"
 #include "dcAudio.h"
 #include "dcRender.h"
+#include "dcFont.h"
 #include "projectile.h"
 #include "explotion.h"
 #include "../third_party/modplayer/modplayer.h"
@@ -78,6 +79,8 @@ void InitGame()
     Camera.PlayerCameraIndex = 0;
     dcCamera_SetScreenResolution(&FirstPlayerCamera, width, height);
     FirstPlayerCamera.PlayerCameraIndex = 1;
+
+
 }
 
 //This should go to a separate .h so we can modify the level without having conflicts
@@ -279,8 +282,15 @@ void Display(SDC_Render* InRender, SDC_Camera* InCamera)
 {
 
     MATRIX CharacterTransform;
+
     for(int i = 0; i < MainLevel.NumCharacters; i++)
     {
+        //Draw UI:
+        CVECTOR fontColor = {127, 127, 127};
+        char PlayerTxt[256];
+        sprintf(PlayerTxt, "LIVES: %i\n", MainLevel.Characters[i]->Lives);
+        VECTOR TxtPos = {500,100};
+
         bool bIsLocalPlayer = InCamera->PlayerCameraIndex == i;
         if(bIsLocalPlayer)
         {
@@ -290,13 +300,23 @@ void Display(SDC_Render* InRender, SDC_Camera* InCamera)
             VECTOR LookAt =  MainLevel.Characters[i]->Location;
             LookAt.vy += 150;
             dcCamera_LookAt(InCamera, &LookAt);
+            TxtPos.vx = 50;
+            TxtPos.vy = 200;
         }
         //TODO save in first time;
         RotMatrix(&MainLevel.Characters[i]->Rotation, &CharacterTransform);
         TransMatrix(&CharacterTransform,  &MainLevel.Characters[i]->Location);
         dcRender_PreDrawMesh(&MainLevel, InCamera, &MainLevel.Characters[i]->Location, &MainLevel.Characters[i]->Rotation, &CharacterTransform);
         dcRender_DrawMesh(InRender, MainLevel.Characters[i]->Mesh, &CharacterTransform, MainLevel.Characters[i]->DrawParams);
+
+        dcFont_Print(InRender, TxtPos.vx, TxtPos.vy,&fontColor,PlayerTxt);
+
+ 
+
+        //FntPrint("TESTING:\n");
     }
+
+
     //Draw Objects
    for(int i = 0; i < MainLevel.NumObjects; i++)
     {
@@ -344,6 +364,7 @@ void Display(SDC_Render* InRender, SDC_Camera* InCamera)
         dcRender_DrawMesh(InRender, MainLevel.Explotions[i]->Mesh, &WorldTransform, MainLevel.Explotions[i]->DrawParams);
     }
     dcRender_SwapBuffers(InRender);
+
 }
 
 void Input()
@@ -378,11 +399,12 @@ void Input()
 
 int main(void) 
 {    
-    
+    printf("Call dcFont starting\n");
+
     InitGame();   
     InitLevel();
 
-
+    dcFont_UseSystemFont();
     //dcAudio_SfxLoad(&audio, &bellSfx, (u_char *)_binary_data_bell_vag_start);
     //dcAudio_SfxLoad(&audio, &acceptSfx, (u_char *)_binary_data_accept_vag_start);
     //dcAudio_SfxLoad(&audio, &beepSfx, (u_char *)_binary_data_beep_vag_start); 
@@ -398,7 +420,6 @@ int main(void)
         DrawSync( 0 );
         SetDispMask( 1 );
 
-
     for(int i = 0; i < MainLevel.NumProjectiles; i++)
     {
         UpdateProjectile(&MainLevel, MainLevel.Projectiles[i], i);
@@ -411,7 +432,6 @@ int main(void)
         Input(); 
         Display(&Render, &Camera);       
         Display(&FirstPlayerRender, &FirstPlayerCamera);
-        
     }
 
     return 0;

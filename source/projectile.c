@@ -22,10 +22,10 @@ void UpdateProjectile(SDC_Level* Level, SDC_Projectile* Projectile, int IndexInA
                //printf("Tank: %d \n",i);
                //printf("Dist: %d \n",Dist);
                if(Dist < Projectile->ExplosionRange){
-                    if(Level->Characters[i]->Lifes > 1)
+                    if(Level->Characters[i]->Lives > 1)
                     {
-                         Level->Characters[i]->Lifes--;
-                         printf("Tank %d received hit  Current Lives: %d \n", i,Level->Characters[i]->Lifes);
+                         Level->Characters[i]->Lives--;
+                         printf("Tank %d received hit  Current Lives: %d \n", i,Level->Characters[i]->Lives);
                     }
                     else{
                          //game over

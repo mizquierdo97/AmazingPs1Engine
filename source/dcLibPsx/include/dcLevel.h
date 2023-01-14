@@ -53,7 +53,7 @@ typedef struct SDC_Explotion
 
 typedef struct  SDC_Character
 {
-    int Lifes;
+    int Lives;
     int PlayerIndex;
     VECTOR Location;
     SVECTOR Rotation;

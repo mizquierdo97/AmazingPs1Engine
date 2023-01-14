@@ -90,7 +90,7 @@ SDC_Character* dcLevel_InitCharacter(SDC_Level *Level, SDC_Mesh3D *Mesh, VECTOR 
     NewCharacter->ParryFrames = 6;
      NewCharacter->ParryCooldown = 60;
      NewCharacter->ParryCurrentCooldown =0;
-    NewCharacter->Lifes = 3;
+    NewCharacter->Lives = 3;
     
     //Malloc for every object? or with MaxArray size?
     Level->Characters = realloc3(Level->Characters, (Level->NumCharacters + 1) * sizeof(SDC_Object*));
@@ -111,7 +111,7 @@ void dcLevel_AddProjectile(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location,
     NewProjectile->Voy = DC_MIN(DC_MAX(Strength/2, 10), 100);;
     NewProjectile->Vy = NewProjectile->Voy;
     NewProjectile->Direction = *Direction;
-    NewProjectile->ExplosionRange = 50;
+    NewProjectile->ExplosionRange = 30;
     NewProjectile->Dmg = 1;
    // NewProjectile->Init;
     //NewProjectile->PlayerIndex = Level->NumCharacters;
@@ -197,4 +197,5 @@ void GetParentTransform(SDC_Object* Object, MATRIX *Transform, MATRIX *OutTransf
         ScaleMatrixL(OutTransform, &Object->Scale);
     }
 }
+
 

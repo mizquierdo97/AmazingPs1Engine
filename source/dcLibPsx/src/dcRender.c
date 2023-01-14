@@ -90,7 +90,7 @@ else
     SetVideoMode(mode==RENDER_MODE_NTCS?MODE_NTSC:MODE_PAL);
 
     //Debug font (to remove)
-    FntLoad(960, 128);
+    FntLoad(960, 256);
     SetDumpFnt(FntOpen(16, 16, 320, 64, 0, 512));
     }
     PutDispEnv( &render->displayEnvironment[render->doubleBufferIndex] );

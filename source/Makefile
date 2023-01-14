@@ -14,6 +14,7 @@ SRCS = main.c\
 		dcLibPsx/src/dcLevel.c\
 		dcLibPsx/src/dcSprite.c\
 		dcLibPsx/src/dcAudio.c\
+		dcLibPsx/src/dcFont.c\
 		character.c\
 		textures/smile.tim\
 		textures/colorpallete.tim\
