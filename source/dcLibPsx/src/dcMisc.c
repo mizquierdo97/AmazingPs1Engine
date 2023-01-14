@@ -148,7 +148,7 @@ SDC_Mesh3D* dcMisc_generateSphereMesh(long radius, unsigned latDivs, unsigned lo
         vert->normal.vx = -vert->normal.vx;
         vert->normal.vy = -vert->normal.vy;
         vert->normal.vz = -vert->normal.vz;
-        printf("v: %d %d %d N: %d %d %d\n", pos.vx, pos.vy, pos.vz, vert->normal.vx, vert->normal.vy, vert->normal.vz );
+        //printf("v: %d %d %d N: %d %d %d\n", pos.vx, pos.vy, pos.vz, vert->normal.vx, vert->normal.vy, vert->normal.vz );
 
     }
 

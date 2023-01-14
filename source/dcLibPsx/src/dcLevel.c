@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <memory.h>
 #include "dcMath.h"
+#include "dcMisc.h"
 
 void dcLevel_InitLight(SDC_Level *Level, CVECTOR *AmbientColor)
 {
@@ -53,6 +54,7 @@ SDC_Object* dcLevel_AddObject(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR* Locati
 }
 
 SDC_Object* dcLevel_AddObjectOnCharacter(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Rotation, SDC_DrawParams* DrawParams, SDC_Character* Parent, int bHasCollision, VECTOR* BoxHalfCollision)
+
 {    
     SDC_Object* Obj = malloc3(sizeof(SDC_Object));
     Obj->Location = *Location; //<----- to Transform
@@ -84,9 +86,12 @@ SDC_Character* dcLevel_InitCharacter(SDC_Level *Level, SDC_Mesh3D *Mesh, VECTOR 
     NewCharacter->bDoingParry = 0;
     NewCharacter->bHoldingFire = 0;
     NewCharacter->bDoingDash = 0;
+
     NewCharacter->ParryFrames = 6;
      NewCharacter->ParryCooldown = 60;
      NewCharacter->ParryCurrentCooldown =0;
+    NewCharacter->Lifes = 3;
+    
     //Malloc for every object? or with MaxArray size?
     Level->Characters = realloc3(Level->Characters, (Level->NumCharacters + 1) * sizeof(SDC_Object*));
 
@@ -106,7 +111,8 @@ void dcLevel_AddProjectile(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location,
     NewProjectile->Voy = DC_MIN(DC_MAX(Strength/2, 10), 100);;
     NewProjectile->Vy = NewProjectile->Voy;
     NewProjectile->Direction = *Direction;
-    NewProjectile->ExplosionRange = 100;
+    NewProjectile->ExplosionRange = 50;
+    NewProjectile->Dmg = 1;
    // NewProjectile->Init;
     //NewProjectile->PlayerIndex = Level->NumCharacters;
     //Malloc for every object? or with MaxArray size?
@@ -114,9 +120,34 @@ void dcLevel_AddProjectile(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location,
     Level->Projectiles[Level->NumProjectiles] = NewProjectile;
     Level->NumProjectiles++;
 }
+void dcLevel_AddExplotion(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR Location, SDC_DrawParams* DrawParams)
+{
+    SDC_Explotion* Explotion = malloc3(sizeof(SDC_Explotion));
+    Explotion->Location = Location; //<----- to Transform
+    SVECTOR Rot = {0,0,0};
+    Explotion->Rotation =Rot;
+    Explotion->Mesh = Mesh;
+    Explotion->DrawParams = DrawParams;
+    Explotion->InitRadius = 10;
+    Explotion->MaxRadius = 200;
+    Explotion->CurrentRadius = Explotion->InitRadius;
+    Explotion->ExpansionSpeed = 10;
+
+    
+    //Malloc for every object? or with MaxArray size?
+    Level->Explotions = realloc3(Level->Explotions, (Level->NumExplotions + 1) * sizeof(SDC_Explotion*));
+    Level->Explotions[Level->NumExplotions] = Explotion;    
+    Level->NumExplotions++;
+}
 void dcLevel_DestroyProjectile(SDC_Level* Level, int i)
 {
     //Explode
+    //Change DrawParams in the future
+    SDC_Mesh3D* sphere = dcMisc_generateSphereMesh(10,8,8);
+    VECTOR Location = Level->Projectiles[i]->Location;
+    dcLevel_AddExplotion(Level, sphere, Location, Level->Projectiles[i]->DrawParams);
+    //dcLevel_AddExplotion(Level, sphere, &Level->Projectiles[i]->Location, Level->Projectiles[i]->DrawParams, NULL, 0 ,NULL);
+
 
     SDC_Projectile** temp = malloc3((Level->NumProjectiles - 1) * sizeof(SDC_Projectile*)); // allocate an array with a size 1 less than the current one
 
@@ -131,6 +162,24 @@ void dcLevel_DestroyProjectile(SDC_Level* Level, int i)
     
     Level->NumProjectiles--;
     Level->Projectiles = temp;
+}
+
+void dcLevel_DestroyExplotion(SDC_Level* Level, int i)
+{
+
+    SDC_Explotion** temp = malloc3((Level->NumExplotions - 1) * sizeof(SDC_Explotion*)); // allocate an array with a size 1 less than the current one
+
+    if (i != 0)
+        memcpy(temp, Level->Explotions, i * sizeof(SDC_Projectile*)); // copy everything BEFORE the index
+
+    if (i != (Level->NumExplotions - 1))
+        memcpy(temp+i, Level->Explotions+i+1, (Level->NumExplotions - i - 1) * sizeof(SDC_Explotion*)); // copy everything AFTER the index
+    
+    free3 (Level->Explotions[i]);
+    free3 (Level->Explotions);
+    
+    Level->NumExplotions--;
+    Level->Explotions = temp;
 }
 
 void GetParentTransform(SDC_Object* Object, MATRIX *Transform, MATRIX *OutTransform)
