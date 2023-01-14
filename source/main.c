@@ -34,6 +34,7 @@
 //#include "meshes/left_eye.h"
 //#include "meshes/right_eye.h"
 #include "meshes/Bonifacio.h"
+#include "meshes/floor_mesh.h"
 
 
 
@@ -54,7 +55,7 @@ extern unsigned long _binary_textures_colorpallete_tim_start[];
 extern unsigned long _binary_textures_smile_tim_start[];
 extern unsigned long _binary_textures_Letra_A_tim_start[];
 extern unsigned long _binary_textures_Pala_tim_start[];
-
+extern unsigned long _binary_textures_floor_texture_tim_start[];
 
 
 extern unsigned long _binary_data_accept_vag_start[];
@@ -117,7 +118,8 @@ void InitLevel()
 
     TIM_IMAGE* tim_crash = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));    
     TIM_IMAGE* tim_smile = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
-    TIM_IMAGE* tim_Pala = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
+    TIM_IMAGE* tim_Pala = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));    
+    TIM_IMAGE* tim_floor = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
 
 
     //We can move this structure initialization to a function
@@ -139,16 +141,24 @@ void InitLevel()
         .bLighting = 1,
         .bUseConstantColor = 1
     };
-
-    SDC_DrawParams* DrawParamsCrashPtr = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
-    *DrawParamsCrashPtr = DrawParamsCrash;
-
+       
+            SDC_DrawParams DrawParamsFloor = {
+        .tim = tim_floor,
+        .constantColor = {255, 255, 255},
+        .bLighting = 1,
+        .bUseConstantColor = 1
+    };
  SDC_DrawParams DrawPalaParams = {
         .tim = tim_Pala,
         .constantColor = {255, 255, 255},
         .bLighting = 1,
         .bUseConstantColor = 1
     };
+//printf("\n", DrawParamsFloor.bLighting);
+    SDC_DrawParams* DrawParamsFloorPtr = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
+    *DrawParamsFloorPtr = DrawParamsFloor;
+    SDC_DrawParams* DrawParamsCrashPtr = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
+    *DrawParamsCrashPtr = DrawParamsCrash;
 
     SDC_DrawParams* DrawParamsPalaPtr = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
     *DrawParamsPalaPtr = DrawPalaParams;
@@ -162,7 +172,7 @@ void InitLevel()
     dcRender_LoadTexture(tim_crash, _binary_textures_colorpallete_tim_start);
     dcRender_LoadTexture(tim_smile, _binary_textures_Letra_A_tim_start);
     dcRender_LoadTexture(tim_Pala, _binary_textures_Pala_tim_start);
-
+    dcRender_LoadTexture(tim_floor, _binary_textures_floor_texture_tim_start);
 
 
 
@@ -230,13 +240,15 @@ void InitLevel()
     
 
 
-
+VECTOR nullbox = {0,0,0};
+    dcLevel_AddObject(&MainLevel, &floor_mesh_Mesh, &BoxLocarion, DrawParamsFloorPtr, NULL, 0 ,&nullbox);
     
         
     SDC_Character* FirstCharacter = dcLevel_InitCharacter(&MainLevel, &body_Mesh, &CharacterInitialLocation, DrawParamsCrashPtr);
     dcLevel_InitCharacter(&MainLevel, &body_Mesh, &Character2InitialLocation, DrawParamsCrashPtr2);    
     //el bonifacio
     dcLevel_AddObjectOnCharacter(&MainLevel, &Bonifacio_Mesh, &palaLocation, DrawParamsPalaPtr, FirstCharacter, 1 ,&BoxHalfSize);
+    
 
 }       
 
@@ -350,6 +362,7 @@ int main(void)
         SetDispMask( 1 );
 
 
+printf("HERE2!!!\n");
     for(int i = 0; i < MainLevel.NumProjectiles; i++)
     {
         UpdateProjectile(&MainLevel, MainLevel.Projectiles[i], i);
@@ -357,6 +370,8 @@ int main(void)
         Input(); 
         Display(&Render, &Camera);       
         Display(&FirstPlayerRender, &FirstPlayerCamera);
+        
+printf("HERE!!!\n");
     }
 
     return 0;
