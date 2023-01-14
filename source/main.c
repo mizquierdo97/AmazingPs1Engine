@@ -57,6 +57,7 @@ extern unsigned long _binary_textures_smile_tim_start[];
 extern unsigned long _binary_textures_Letra_A_tim_start[];
 extern unsigned long _binary_textures_Pala_tim_start[];
 extern unsigned long _binary_textures_floor_texture_tim_start[];
+extern unsigned long _binary_textures_tank_texture_tim_start[];
 
 
 extern unsigned long _binary_data_accept_vag_start[];
@@ -104,7 +105,7 @@ void InitLevel()
     MainLevel.NumObjects = 0;
     //Ambient Light
     dcRender_SetAmbientColor(&Render, &MainLevel.AmbientColor);
-    SVECTOR LightDirection = {-ONE, -ONE, 0};
+    SVECTOR LightDirection = {-ONE, -2048, 0};
     SVECTOR LightColor = {ONE, ONE, ONE};
     dcLevel_SetLight(&MainLevel, 0, &LightDirection, &LightColor);
 
@@ -122,18 +123,19 @@ void InitLevel()
     TIM_IMAGE* tim_smile = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
     TIM_IMAGE* tim_Pala = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));    
     TIM_IMAGE* tim_floor = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
+    TIM_IMAGE* tim_tank = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
 
     MainLevel.ExplosionMesh = dcMisc_generateSphereMesh(200,2,2);
     //We can move this structure initialization to a function
     SDC_DrawParams DrawParamsCrash = {
-        .tim = tim_smile,
-        .constantColor = {255, 0, 255},
+        .tim = tim_tank,
+        .constantColor = {255, 255, 255},
         .bLighting = 1,
         .bUseConstantColor = 1
     };    
     SDC_DrawParams DrawParamsCrash2 = {
-        .tim = tim_smile,
-        .constantColor = {0, 255, 255},
+        .tim = tim_tank,
+        .constantColor = {255, 255, 255},
         .bLighting = 1,
         .bUseConstantColor = 1
     };
@@ -175,6 +177,7 @@ void InitLevel()
     dcRender_LoadTexture(tim_smile, _binary_textures_Letra_A_tim_start);
     dcRender_LoadTexture(tim_Pala, _binary_textures_Pala_tim_start);
     dcRender_LoadTexture(tim_floor, _binary_textures_floor_texture_tim_start);
+    dcRender_LoadTexture(tim_tank, _binary_textures_tank_texture_tim_start);
 
 
 
@@ -278,13 +281,7 @@ void Display(SDC_Render* InRender, SDC_Camera* InCamera)
      MATRIX OutTransform;
     for(int i = 0; i < MainLevel.NumCharacters; i++)
     {
-        
-        //Draw UI:
-        CVECTOR fontColor = {127, 127, 127};
-        char PlayerTxt[256];
-        sprintf(PlayerTxt, "LIVES: %i\n", MainLevel.Characters[i]->Lives);
-        VECTOR TxtPos = {100,10};
-        dcFont_Print(InRender, TxtPos.vx, TxtPos.vy,&fontColor,PlayerTxt);
+
 
           dcCamera_ApplyCameraTransform(InCamera,  &MainLevel.Characters[i]->WorldTransform,  &OutTransform);
 
@@ -362,13 +359,46 @@ SVECTOR ObjectNullRotation = {0,0,0};
         // Light Matrix * RotMatrix light 
         MulMatrix0(&MainLevel.LocalLightMatrix, &MainLevel.RotLight, &MainLevel.WorldLightMatrix);
         // Set new light matrix 
-        SetLightMatrix(&MainLevel.WorldLightMatrix);     
+        SetLightMatrix(&MainLevel.WorldLightMatrix);    
+        int TimeToChangeScreen = 0;
+        int bIsScreenSwapped = 0; 
     while (1) 
     {       
+    TimeToChangeScreen++;
+    if(TimeToChangeScreen > 200)
+    {
+        TimeToChangeScreen = 0;
+        bIsScreenSwapped = !bIsScreenSwapped;
 
-    // Init Pad
-   
-    // Store input values    
+        if(bIsScreenSwapped)
+        { 
+            SetDefDrawEnv( &FirstPlayerRender.drawEnvironment[0],    0, 0,      640/2, 240 );
+            SetDefDrawEnv( &FirstPlayerRender.drawEnvironment[1],    0, 240, 640/2, 240 );
+
+            SetDefDispEnv( &FirstPlayerRender.displayEnvironment[0], 0, 240, 640, 240 );
+            SetDefDispEnv( &FirstPlayerRender.displayEnvironment[1], 0, 0,      640, 240 );
+
+            SetDefDrawEnv( &Render.drawEnvironment[0],    640/2, 0,      640/2, 240 );
+            SetDefDrawEnv( &Render.drawEnvironment[1],    640/2, 240, 640/2, 240 );
+
+            SetDefDispEnv( &Render.displayEnvironment[0], 0, 240, 640, 240 );
+            SetDefDispEnv( &Render.displayEnvironment[1], 0, 0,      640, 240 );
+        }
+        else
+        {
+            SetDefDrawEnv( &Render.drawEnvironment[0],    0, 0,      640/2, 240 );
+            SetDefDrawEnv( &Render.drawEnvironment[1],    0, 240, 640/2, 240 );
+
+            SetDefDispEnv( &Render.displayEnvironment[0], 0, 240, 640, 240 );
+            SetDefDispEnv( &Render.displayEnvironment[1], 0, 0,      640, 240 );
+
+            SetDefDrawEnv( &FirstPlayerRender.drawEnvironment[0],    640/2, 0,      640/2, 240 );
+            SetDefDrawEnv( &FirstPlayerRender.drawEnvironment[1],    640/2, 240, 640/2, 240 );
+
+            SetDefDispEnv( &FirstPlayerRender.displayEnvironment[0], 0, 240, 640, 240 );
+            SetDefDispEnv( &FirstPlayerRender.displayEnvironment[1], 0, 0,      640, 240 );
+        }
+    } 
 
 
 
@@ -385,12 +415,22 @@ SVECTOR ObjectNullRotation = {0,0,0};
     for(int i = 0; i < MainLevel.NumCharacters; i++)
     {
         SDC_Camera* InCamera = i == 0 ? &Camera : &FirstPlayerCamera;
+        
+        SDC_Render* InRender = i == 0 ? &Render : &FirstPlayerRender;
             UpdateCharacter(MainLevel.Characters[i], &MainLevel);
             SVECTOR CameraLocation = MainLevel.Characters[i]->FrontVector;
             dcCamera_SetCameraPosition(InCamera, MainLevel.Characters[i]->Location.vx + CameraLocation.vx / 20, MainLevel.Characters[i]->Location.vy + 200, MainLevel.Characters[i]->Location.vz + CameraLocation.vz / 20);
             VECTOR LookAt =  MainLevel.Characters[i]->Location;
             LookAt.vy += 150;
             dcCamera_LookAt(InCamera, &LookAt);
+
+                    
+        //Draw UI:
+        CVECTOR fontColor = {127, 127, 127};
+        char PlayerTxt[256];
+        sprintf(PlayerTxt, "LIVES: %i\n", MainLevel.Characters[i]->Lives);
+        VECTOR TxtPos = {100,10};
+        dcFont_Print(InRender, TxtPos.vx, TxtPos.vy,&fontColor,PlayerTxt);
             
             RotMatrix(&MainLevel.Characters[i]->Rotation, &MainLevel.Characters[i]->WorldTransform);            
             TransMatrix(&MainLevel.Characters[i]->WorldTransform,  &MainLevel.Characters[i]->Location);
