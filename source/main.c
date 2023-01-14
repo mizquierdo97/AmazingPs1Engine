@@ -37,6 +37,11 @@
 #include "meshes/Bonifacio.h"
 //#include "meshes/floor_mesh.h"
 
+#include "meshes/Bonifacio.h"
+
+#include "meshes/wall.h"
+
+
 
 
 
@@ -186,6 +191,10 @@ void InitLevel()
     VECTOR BoxLocation4 = {375,0, 0, 0};
     VECTOR BoxLocation5 = {-125,0, 125, 0};
     VECTOR BoxLocation6 = {-125,0, 250, 0};
+
+    VECTOR WallLocation = {1000,0, 0, 0};
+
+
     /*VECTOR BoxLocation7 = {-125,0, 375, 0};
     VECTOR BoxLocation8 = {0,125, 0, 0};
     VECTOR BoxLocation9 = {375,0, 0, 0};
@@ -217,6 +226,12 @@ void InitLevel()
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation4,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation5, &BoxRotation,DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation6,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+
+
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &WallLocation,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+
+
+
     /*dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation7,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation8, &BoxRotation,DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation9,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
