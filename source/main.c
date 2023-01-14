@@ -22,7 +22,21 @@
 #include "dcRender.h"
 #include "projectile.h"
 #include "../third_party/modplayer/modplayer.h"
-#include "meshes/Box001.h"
+//#include "meshes/Box001.h"
+
+// cubo letras👍
+#include "meshes/Box003.h"
+
+//tank pieces
+#include "meshes/body.h"
+//#include "meshes/cannon.h"
+//#include "meshes/head.h"
+//#include "meshes/left_eye.h"
+//#include "meshes/right_eye.h"
+#include "meshes/Bonifacio.h"
+
+
+
 
 #define CUBESIZE 196 
 
@@ -38,6 +52,10 @@ SDC_Level MainLevel;
 
 extern unsigned long _binary_textures_colorpallete_tim_start[];
 extern unsigned long _binary_textures_smile_tim_start[];
+extern unsigned long _binary_textures_Letra_A_tim_start[];
+extern unsigned long _binary_textures_Pala_tim_start[];
+
+
 
 extern unsigned long _binary_data_accept_vag_start[];
 extern unsigned long _binary_data_beep_vag_start[];
@@ -99,6 +117,8 @@ void InitLevel()
 
     TIM_IMAGE* tim_crash = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));    
     TIM_IMAGE* tim_smile = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
+    TIM_IMAGE* tim_Pala = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
+
 
     //We can move this structure initialization to a function
     SDC_DrawParams DrawParamsCrash = {
@@ -122,25 +142,108 @@ void InitLevel()
 
     SDC_DrawParams* DrawParamsCrashPtr = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
     *DrawParamsCrashPtr = DrawParamsCrash;
+
+ SDC_DrawParams DrawPalaParams = {
+        .tim = tim_Pala,
+        .constantColor = {255, 255, 255},
+        .bLighting = 1,
+        .bUseConstantColor = 1
+    };
+
+    SDC_DrawParams* DrawParamsPalaPtr = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
+    *DrawParamsPalaPtr = DrawPalaParams;
+
+
         SDC_DrawParams* DrawParamsCrashPtr2 = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
     *DrawParamsCrashPtr2 = DrawParamsCrash2;
     SDC_DrawParams* DrawParamsPtr = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
     *DrawParamsPtr = DrawParams;
 
     dcRender_LoadTexture(tim_crash, _binary_textures_colorpallete_tim_start);
-    dcRender_LoadTexture(tim_smile, _binary_textures_smile_tim_start);
+    dcRender_LoadTexture(tim_smile, _binary_textures_Letra_A_tim_start);
+    dcRender_LoadTexture(tim_Pala, _binary_textures_Pala_tim_start);
 
-    VECTOR BoxLocation = {000,0, 0, 0};
-    VECTOR BoxLocation2 = {200,0, 0, 0};
+
+
+
+    //localizaciones cajas para luego crear los actores
+    VECTOR BoxLocarion = {000,0, 0, 0};
+    VECTOR BoxLocation4 = {375,125, 0, 0};
+    VECTOR BoxLocation5 = {-125,0, 125, 0};
+    VECTOR BoxLocation6 = {-125,0, 250, 0};
+    VECTOR BoxLocation7 = {-125,0, 375, 0};
+    VECTOR BoxLocation8 = {0,125, 0, 0};
+    VECTOR BoxLocation9 = {375,0, 0, 0};
+    VECTOR BoxLocation10 = {500,0, 125, 0};
+    VECTOR BoxLocation11 = {500,0, 250, 0};
+    VECTOR BoxLocation12 = {500,0, 375, 0};
+
+    VECTOR BoxLocation13 = {0,0, -500, 0};
+    VECTOR BoxLocation16 = {375,0, -500, 0};
+    VECTOR BoxLocation17 = {0,125, -500, 0};
+    VECTOR BoxLocation18 = {375,125, -500, 0};
+    VECTOR BoxLocation19 = {-125,0, -625, 0};
+    VECTOR BoxLocation20 = {-125,0, -750, 0};
+    VECTOR BoxLocation21 = {-125,0, -875, 0};
+
+    VECTOR BoxLocation22 = {500,0, -625, 0};
+    VECTOR BoxLocation23 = {500,0, -750, 0};
+    VECTOR BoxLocation24 = {500,0, -875, 0};
+
+
+    
+
+
+
+
+    VECTOR palaLocation = {200,0, 200, 0};
+    
+
+
     VECTOR CharacterInitialLocation = {100,0, 0, 0};
     VECTOR Character2InitialLocation = {-100, 0, 0, 0};
+    
+    SDC_Object* Parent = dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocarion, DrawParamsPtr, NULL);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation4, DrawParamsPtr, Parent);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation5, DrawParamsPtr, Parent);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation6, DrawParamsPtr, Parent);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation7, DrawParamsPtr, Parent);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation8, DrawParamsPtr, Parent);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation9, DrawParamsPtr, Parent);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation10, DrawParamsPtr, Parent);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation11, DrawParamsPtr, Parent);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation12, DrawParamsPtr, Parent);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation13, DrawParamsPtr, Parent);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation16, DrawParamsPtr, Parent);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation17, DrawParamsPtr, Parent);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation18, DrawParamsPtr, Parent);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation19, DrawParamsPtr, Parent);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation20, DrawParamsPtr, Parent);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation21, DrawParamsPtr, Parent);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation22, DrawParamsPtr, Parent);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation23, DrawParamsPtr, Parent);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation24, DrawParamsPtr, Parent);
 
-    VECTOR CollisionHalfBox = {20, 20, 20};
-    SDC_Object* Parent = dcLevel_AddObject(&MainLevel, &Box001_Mesh, &BoxLocation, DrawParamsPtr, NULL, 1, &CollisionHalfBox);
- 
-    dcLevel_AddObject(&MainLevel, &Box001_Mesh, &BoxLocation2, DrawParamsPtr, Parent, 1, &CollisionHalfBox);    
-    dcLevel_InitCharacter(&MainLevel, &Box001_Mesh, &CharacterInitialLocation, DrawParamsCrashPtr);
-    dcLevel_InitCharacter(&MainLevel, &Box001_Mesh, &Character2InitialLocation, DrawParamsCrashPtr2);
+
+    
+    
+
+
+    //el bonifacio
+    dcLevel_AddObject(&MainLevel, &Bonifacio_Mesh, &palaLocation, DrawParamsPalaPtr, Parent);
+
+
+
+
+
+
+
+
+    
+        
+    dcLevel_InitCharacter(&MainLevel, &body_Mesh, &CharacterInitialLocation, DrawParamsCrashPtr);
+    dcLevel_InitCharacter(&MainLevel, &body_Mesh, &Character2InitialLocation, DrawParamsCrashPtr2);
+
 }       
 
 void Display(SDC_Render* InRender, SDC_Camera* InCamera)
