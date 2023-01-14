@@ -26,6 +26,7 @@ typedef struct SDC_Projectile
     int Vox;
     int Vy;
     int Voy;
+    int ExplosionRange;
     VECTOR Location;
     SVECTOR Rotation;
     SDC_Mesh3D* Mesh;

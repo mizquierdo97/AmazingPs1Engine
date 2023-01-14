@@ -106,6 +106,7 @@ void dcLevel_AddProjectile(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location,
     NewProjectile->Voy = DC_MIN(DC_MAX(Strength/2, 10), 100);;
     NewProjectile->Vy = NewProjectile->Voy;
     NewProjectile->Direction = *Direction;
+    NewProjectile->ExplosionRange = 100;
    // NewProjectile->Init;
     //NewProjectile->PlayerIndex = Level->NumCharacters;
     //Malloc for every object? or with MaxArray size?
