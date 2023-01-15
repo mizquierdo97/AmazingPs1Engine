@@ -128,6 +128,7 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
                 Level->Projectiles[i]->Vox *= 3;
                 Level->Projectiles[i]->Vy = 0;
                 Character->bDoingParry = 0;
+                Level->Projectiles[i]->Character = Character;
            Character->Pala->Scale = (VECTOR){0,0,0};
             }
         }
