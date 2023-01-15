@@ -113,7 +113,7 @@ void dcAudio_SfxLoad(SDC_Audio *audio, SDC_Sfx* sfx, u_char *data) {
       SPU_VOICE_ADSR_RR |
       SPU_VOICE_ADSR_SL
     );
-    sfx->voiceAttributes.voice        = sfx->spu_channel;        //~ Voice (low 24 bits are a bit string, 1 bit per voice )
+    sfx->voiceAttributes.voice        = sfx->spu_channel;        //~ Voice (low 24 bits are a bit string, 1 bit per SDC_Sfx* sfxvoice )
     sfx->voiceAttributes.volume.left  = 0x0;                     //~ Volume 
     sfx->voiceAttributes.volume.right = 0x0;                     //~ Volume
     sfx->voiceAttributes.pitch        = pitch;                   //~ Interval (set pitch)

@@ -18,7 +18,11 @@ SRCS = main.c\
 		character.c\
 		textures/smile.tim\
 		textures/colorpallete.tim\
-		data/accept.vag data/beep.vag data/bell.vag\
+		data/Fire.vag\
+		data/Hit.vag\
+		data/accept.vag\
+		data/beep.vag\
+		data/bell.vag\
 		projectile.c\
 		explotion.c\
 		textures/Letra_A.tim\
@@ -36,6 +40,7 @@ LDFLAGS += -L../third_party/psyq/lib
 LDFLAGS += -Wl,--start-group
 LDFLAGS += -lapi
 LDFLAGS += -lc
+LDFLAGS += -lcd
 LDFLAGS += -lc2
 LDFLAGS += -lcard
 LDFLAGS += -lcomb

@@ -44,7 +44,7 @@ void UpdateProjectile(SDC_Level* Level, SDC_Projectile* Projectile, int IndexInA
           SVECTOR Diff = {Projectile->Location.vx -  Level->Characters[i]->Location.vx, Projectile->Location.vz - Level->Characters[i]->Location.vz};
           int Dist =  SquareRoot12( DC_MUL(Diff.vx , Diff.vx) + DC_MUL(Diff.vz , Diff.vz));
 
-          if((Dist < Projectile->ExplosionRange) && (Projectile->Character->PlayerIndex != i)){
+          if((Dist < Projectile->ExplosionRange) && (Projectile->Character->PlayerIndex != i) && (!Level->bGameOver)){
                Level->Characters[i]->Lives--;
                if(Level->Characters[i]->Lives <= 0)
                {

@@ -7,6 +7,12 @@
 #include <memory.h>
 #include "dcMath.h"
 #include "dcMisc.h"
+#include "dcAudio.h"
+
+
+
+extern unsigned long _binary_data_Fire_vag_start[];
+extern unsigned long _binary_data_Hit_vag_start[];
 
 void dcLevel_InitLight(SDC_Level *Level, CVECTOR *AmbientColor)
 {
@@ -108,6 +114,9 @@ SDC_Character* dcLevel_InitCharacter(SDC_Level *Level, SDC_Mesh3D *Mesh, VECTOR 
 }
 void dcLevel_AddProjectile(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Direction,int Strength, SDC_DrawParams* DrawParams, SDC_Character* Character)
 {
+    //Sound
+    dcAudio_SfxPlay(&Level->FireSfx);
+
     SDC_Projectile* NewProjectile = malloc3(sizeof(SDC_Projectile));
     NewProjectile->Location = *Location; //<----- to Transform
     SVECTOR Rot = {0,0,0};
@@ -150,6 +159,8 @@ void dcLevel_AddExplotion(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR Location, S
 void dcLevel_DestroyProjectile(SDC_Level* Level, int i)
 {
     //Explode
+    //Sound
+    dcAudio_SfxPlay(&Level->HitSfx);
     //Change DrawParams in the future
     VECTOR Location = Level->Projectiles[i]->Location;
     dcLevel_AddExplotion(Level, Level->ExplosionMesh, Location, Level->Projectiles[i]->DrawParams);

@@ -42,13 +42,9 @@
 
 #include "meshes/wall.h"
 
-
-
-
-
 #define CUBESIZE 196 
 
-
+SDC_Audio Audio;
 SDC_Render Render;
 SDC_Render FirstPlayerRender;
 SDC_Render SecondPlayerRender;
@@ -70,9 +66,9 @@ extern unsigned long _binary_textures_red_tank_texture_tim_start[];
 extern unsigned long _binary_textures_white_tim_start[];
 
 
-extern unsigned long _binary_data_accept_vag_start[];
-extern unsigned long _binary_data_beep_vag_start[];
-extern unsigned long _binary_data_bell_vag_start[];
+extern unsigned long _binary_data_Fire_vag_start[];
+extern unsigned long _binary_data_Hit_vag_start[];
+//extern unsigned long _binary_data_bell_vag_start[];
 
 int GameOverSeconds;
 int CurrentGameOverSeconds;
@@ -105,7 +101,7 @@ void InitGame()
 void InitLevel()
 {    
 
-    //dcAudio_MusicPlay(&audio, 0);
+
 
     //Camera Init
     long CameraDistance = 500;
@@ -377,6 +373,13 @@ int main(void)
     InitGame();   
     InitLevel();
 
+    //Sound
+    dcAudio_Init(&Audio, 16);
+    //dcAudio_MusicPlay(&Audio, 0);
+    dcAudio_SfxLoad(&Audio, &MainLevel.HitSfx, (u_char *)_binary_data_Hit_vag_start);
+    dcAudio_SfxLoad(&Audio, &MainLevel.FireSfx, (u_char *)_binary_data_Fire_vag_start);
+    
+
     dcFont_UseSystemFont();
     //dcAudio_SfxLoad(&audio, &bellSfx, (u_char *)_binary_data_bell_vag_start);
     //dcAudio_SfxLoad(&audio, &acceptSfx, (u_char *)_binary_data_accept_vag_start);
@@ -445,6 +448,7 @@ SVECTOR ObjectNullRotation = {0,0,0};
             SetDefDispEnv( &FirstPlayerRender.displayEnvironment[0], 0, 240, 640, 240 );
             SetDefDispEnv( &FirstPlayerRender.displayEnvironment[1], 0, 0,      640, 240 );
         }
+        dcAudio_Update(&Audio);
     }   
 
 

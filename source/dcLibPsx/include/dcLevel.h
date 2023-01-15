@@ -5,6 +5,7 @@
 #include <libgte.h>
 #include <libgpu.h>
 #include <libgs.h>
+#include "dcAudio.h"
 
 typedef struct SDC_Object SDC_Object;
 typedef struct SDC_Character SDC_Character;
@@ -98,6 +99,8 @@ typedef struct  SDC_Character
 
 typedef struct SDC_Level
 {
+    SDC_Sfx HitSfx;
+    SDC_Sfx FireSfx;
     int bGameOver;
     SDC_Object** Objects;
     SDC_Character** Characters;
@@ -110,6 +113,7 @@ typedef struct SDC_Level
     int MaxObjects;
     SDC_Mesh3D* ExplosionMesh;
     TIM_IMAGE* White;
+    SDC_Audio Audio;
 
 // Back color  
 CVECTOR  AmbientColor;

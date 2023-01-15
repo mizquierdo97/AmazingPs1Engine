@@ -5,7 +5,8 @@
         "libgte.h": "c",
         "character.h": "c",
         "dcmath.h": "c",
-        "dclevel.h": "c"
+        "dclevel.h": "c",
+        "dcaudio.h": "c"
     },
     "makefile.launchConfigurations": [
         {
