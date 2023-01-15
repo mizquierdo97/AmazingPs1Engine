@@ -55,6 +55,8 @@ SDC_Render SecondPlayerRender;
 SDC_Camera Camera;
 SDC_Camera FirstPlayerCamera;
 SDC_Level MainLevel;
+SDC_Character* FirstCharacter;
+SDC_Character* SecondCharacter;
 
 // Display and draw environments, double buffered
 
@@ -72,8 +74,15 @@ extern unsigned long _binary_data_accept_vag_start[];
 extern unsigned long _binary_data_beep_vag_start[];
 extern unsigned long _binary_data_bell_vag_start[];
 
+int GameOverSeconds;
+int CurrentGameOverSeconds;
+VECTOR CharacterInitialLocation = {150,0, 0, 0};
+VECTOR Character2InitialLocation = {-100, 0, 0, 0};
+
 void InitGame()
 {
+    GameOverSeconds = 60;
+    CurrentGameOverSeconds = 0;
     dcMemory_Init();
     PadInit(0);
     InitGeom();   
@@ -221,10 +230,6 @@ void InitLevel()
     VECTOR BoxLocation24 = {500,0, -875, 0};
 */
     VECTOR palaLocation = {10,50, 0, 0};   
-
-
-    VECTOR CharacterInitialLocation = {150,0, 0, 0};
-    VECTOR Character2InitialLocation = {-100, 0, 0, 0};
     
     VECTOR BoxHalfSize = {20,20,20};
     SVECTOR BoxRotation = {0,0,0};
@@ -274,8 +279,8 @@ SVECTOR Wall4Rotation = {0, -1024, 0};
     //dcLevel_AddObject(&MainLevel, &floor_mesh_Mesh, &floorLocation,&BoxRotation, DrawParamsFloorPtr, NULL, 0 ,&nullbox);
     
         
-    SDC_Character* FirstCharacter = dcLevel_InitCharacter(&MainLevel, &body_Mesh, &CharacterInitialLocation, DrawParamsCrashPtr);
-     SDC_Character* SecondCharacter =dcLevel_InitCharacter(&MainLevel, &body_Mesh, &Character2InitialLocation, DrawParamsCrashPtr2);    
+    FirstCharacter = dcLevel_InitCharacter(&MainLevel, &body_Mesh, &CharacterInitialLocation, DrawParamsCrashPtr);
+    SecondCharacter =dcLevel_InitCharacter(&MainLevel, &body_Mesh, &Character2InitialLocation, DrawParamsCrashPtr2);    
     //el bonifacio
 
     SVECTOR PalaRotation = {2048, 0 ,1024};
@@ -309,17 +314,13 @@ SVECTOR Wall4Rotation = {0, -1024, 0};
 
 void Display(SDC_Render* InRender, SDC_Camera* InCamera)
 {
-
-
      MATRIX OutTransform;
     for(int i = 0; i < MainLevel.NumCharacters; i++)
     {
-
-
-          dcCamera_ApplyCameraTransform(InCamera,  &MainLevel.Characters[i]->WorldTransform,  &OutTransform);
-
-         dcRender_DrawMesh(InRender, MainLevel.Characters[i]->Mesh, &OutTransform, MainLevel.Characters[i]->DrawParams);        
+        dcCamera_ApplyCameraTransform(InCamera,  &MainLevel.Characters[i]->WorldTransform,  &OutTransform);
+        dcRender_DrawMesh(InRender, MainLevel.Characters[i]->Mesh, &OutTransform, MainLevel.Characters[i]->DrawParams);        
     }
+    
 
 
 
@@ -373,8 +374,6 @@ void Display(SDC_Render* InRender, SDC_Camera* InCamera)
 
 int main(void) 
 {    
-    printf("Call dcFont starting\n");
-
     InitGame();   
     InitLevel();
 
@@ -396,7 +395,22 @@ SVECTOR ObjectNullRotation = {0,0,0};
         int TimeToChangeScreen = 0;
         int bIsScreenSwapped = 0; 
     while (1) 
-    {       
+    {      
+        if(MainLevel.bGameOver == 1) {
+        if(CurrentGameOverSeconds < GameOverSeconds)
+        {
+            CurrentGameOverSeconds++;
+        }
+        else{
+            //Reinit Game
+            FirstCharacter->Location = CharacterInitialLocation;
+            FirstCharacter->Lives = FirstCharacter->InitLives;
+            SecondCharacter->Location = Character2InitialLocation;
+            SecondCharacter->Lives = SecondCharacter->InitLives;
+            MainLevel.bGameOver = 0;
+            CurrentGameOverSeconds = 0;
+        }    
+        }
     TimeToChangeScreen++;
     if(TimeToChangeScreen > 200)
     {
@@ -431,7 +445,15 @@ SVECTOR ObjectNullRotation = {0,0,0};
             SetDefDispEnv( &FirstPlayerRender.displayEnvironment[0], 0, 240, 640, 240 );
             SetDefDispEnv( &FirstPlayerRender.displayEnvironment[1], 0, 0,      640, 240 );
         }
-    } 
+    }   
+
+
+
+    
+    // Init Pad
+   
+    // Store input values    
+
 
 
 
@@ -463,10 +485,21 @@ SVECTOR ObjectNullRotation = {0,0,0};
         char PlayerTxt[256];
         sprintf(PlayerTxt, "LIVES: %i\n", MainLevel.Characters[i]->Lives);
         VECTOR TxtPos = {100,10};
+
+        //GameOver
+        if(MainLevel.bGameOver == 1){
+            if(MainLevel.Characters[i]->Lives > 0)
+            {
+                sprintf(PlayerTxt, "WINNER!!\n");
+            }
+            else{
+                 sprintf(PlayerTxt, "LOSER\n");
+            }
+        }
         dcFont_Print(InRender, TxtPos.vx, TxtPos.vy,&fontColor,PlayerTxt);
             
-            RotMatrix(&MainLevel.Characters[i]->Rotation, &MainLevel.Characters[i]->WorldTransform);            
-            TransMatrix(&MainLevel.Characters[i]->WorldTransform,  &MainLevel.Characters[i]->Location);
+        RotMatrix(&MainLevel.Characters[i]->Rotation, &MainLevel.Characters[i]->WorldTransform);            
+        TransMatrix(&MainLevel.Characters[i]->WorldTransform,  &MainLevel.Characters[i]->Location);
            
     }
         Display(&Render, &Camera);

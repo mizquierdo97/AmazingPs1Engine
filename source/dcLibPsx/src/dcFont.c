@@ -28,7 +28,6 @@ void dcFont_Load(unsigned long *texture) {
 }
 
 void dcFont_UseSystemFont() {
-    printf("Initialize Font\n");
     gFont.firstChar = 32;
     gFont.charsPerLine = 16;
     gFont.charWidth = 8;
@@ -51,7 +50,6 @@ void dcFont_Print(SDC_Render* render, int x, int y, CVECTOR *color, const char *
     int idx = 0;
     DVECTOR uv;
     while(text[idx] != 0) {
-        printf("Pintando letra: %d es la %c\n", idx, text[idx]);
         int idxFont = text[idx] - gFont.firstChar;
         uv.vx = (idxFont * gFont.charWidth) % (gFont.lineWidth);
         uv.vy = (idxFont/gFont.charsPerLine) * gFont.charHeight;

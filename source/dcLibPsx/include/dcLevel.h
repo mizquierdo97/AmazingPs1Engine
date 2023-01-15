@@ -35,6 +35,7 @@ typedef struct SDC_Projectile
     SDC_Mesh3D* Mesh;
     SVECTOR Direction;
     SDC_DrawParams* DrawParams;
+    SDC_Character* Character;
 }SDC_Projectile;
 
 typedef struct SDC_Explotion
@@ -55,6 +56,7 @@ typedef struct SDC_Explotion
 typedef struct  SDC_Character
 {
     int Lives;
+    int InitLives;
     int PlayerIndex;
     VECTOR Location;
     SVECTOR Rotation;
@@ -96,6 +98,7 @@ typedef struct  SDC_Character
 
 typedef struct SDC_Level
 {
+    int bGameOver;
     SDC_Object** Objects;
     SDC_Character** Characters;
     SDC_Projectile** Projectiles;
@@ -133,7 +136,7 @@ SDC_Object* dcLevel_AddObject(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Locati
 SDC_Object* dcLevel_AddObjectOnCharacter(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Rotation, SDC_DrawParams* DrawParams, SDC_Character* Parent, int bHasCollision, VECTOR* BoxHalfCollision);
 
 void dcLevel_AddExplotion(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR Location, SDC_DrawParams* DrawParams);
-void dcLevel_AddProjectile(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Direction, int Strength,  SDC_DrawParams* DrawParams);
+void dcLevel_AddProjectile(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Direction, int Strength,  SDC_DrawParams* DrawParams, SDC_Character* Character);
 void dcLevel_DestroyProjectile(SDC_Level* Level, int i);
 
 SDC_Character* dcLevel_InitCharacter(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SDC_DrawParams* DrawParams);

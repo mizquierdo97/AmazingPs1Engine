@@ -1,36 +1,66 @@
 #include "projectile.h"
 #include "dcMath.h"
 #include "dcLevel.h"
+#include "dcCollision.h"
 
 
 void UpdateProjectile(SDC_Level* Level, SDC_Projectile* Projectile, int IndexInArray)
 {
+     int bProjectileDead = 0;
      Projectile->Location.vx -= DC_MUL(Projectile->Vox , Projectile->Direction.vx);     
      Projectile->Location.vz -= DC_MUL(Projectile->Vox , Projectile->Direction.vz);
      Projectile->Vy = Projectile->Vy - 1;
      Projectile->Location.vy = Projectile->Location.vy + Projectile->Vy;
    
-    if( Projectile->Location.vy < 0)
+     VECTOR FutureLocation = {Projectile->Location.vx, Projectile->Location.vy, Projectile->Location.vz};
+
+     int bCanMove = 1;
+     VECTOR ProjectileLocation = Projectile->Location;
+     for(int i = 0; i < Level->NumObjects; i++)
      {
-          //Check dmg character
-          for(int i = 0; i < Level->NumCharacters; i++)
+          VECTOR ObjectLocation = Level->Objects[i]->Location;
+          VECTOR Dist = {ObjectLocation.vx - ProjectileLocation.vx,ObjectLocation.vy - ProjectileLocation.vy,ObjectLocation.vz - ProjectileLocation.vz};
+     if(Dist.vx > 200 || Dist.vz > 200)
+     continue;
+          if(dcCollision_SphereOverlapBox(&FutureLocation, 50, &Level->Objects[i]->Location, &Level->Objects[i]->BoxHalfSize))
           {
-               //if(dcCollision_SphereOverlapBox(Projectile->Location,Projectile->ExplosionRange,Level->Characters[i]->Location,Level->Characters[i]->))
-               SVECTOR Diff = {Projectile->Location.vx -  Level->Characters[i]->Location.vx, Projectile->Location.vz - Level->Characters[i]->Location.vz};
-               int Dist =  SquareRoot12( DC_MUL(Diff.vx , Diff.vx) + DC_MUL(Diff.vz , Diff.vz));
+               bCanMove = 0;
+               break;
+          }
+     }
+     if(bCanMove)
+     {
+          Projectile->Location = FutureLocation;
+     }
+     else{
+        dcLevel_DestroyProjectile(Level, IndexInArray);  
+        bProjectileDead = 1;
+     }
 
-               if(Dist < Projectile->ExplosionRange){
-                    if(Level->Characters[i]->Lives > 1)
-                    {
-                         Level->Characters[i]->Lives--;
-                         printf("Tank %d received hit  Current Lives: %d \n", i,Level->Characters[i]->Lives);
+     //Check dmg character
+     for(int i = 0; i < Level->NumCharacters; i++)
+     {
+          //if(dcCollision_SphereOverlapBox(Projectile->Location,Projectile->ExplosionRange,Level->Characters[i]->Location,Level->Characters[i]->))
+          SVECTOR Diff = {Projectile->Location.vx -  Level->Characters[i]->Location.vx, Projectile->Location.vz - Level->Characters[i]->Location.vz};
+          int Dist =  SquareRoot12( DC_MUL(Diff.vx , Diff.vx) + DC_MUL(Diff.vz , Diff.vz));
 
-                    }
-                    else{
-                         //game over
-                    }
+          if((Dist < Projectile->ExplosionRange) && (Projectile->Character->PlayerIndex != i)){
+               Level->Characters[i]->Lives--;
+               if(Level->Characters[i]->Lives <= 0)
+               {
+                    Level->bGameOver = 1;
+               }
+               if(!bProjectileDead)
+               {
+                    dcLevel_DestroyProjectile(Level, IndexInArray);
+                    bProjectileDead = 1;
                }
           }
+     }
+
+    if( (Projectile->Location.vy < 0) && (!bProjectileDead))
+     {
+        
           dcLevel_DestroyProjectile(Level, IndexInArray);
      }
       

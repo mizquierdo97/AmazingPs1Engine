@@ -10,6 +10,9 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
     int PlayerIndex = Character->PlayerIndex;
     u_long PadState = PadRead(0);
     int Speed = 100;
+    if(Level->bGameOver == 1){
+        return;
+    }
     SVECTOR IncrementalPosition = {0,0,0};
     if( _PAD(PlayerIndex,PADLup ) & PadState )
     {
@@ -85,7 +88,7 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
             SDC_DrawParams* DrawParamsPtr = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
             *DrawParamsPtr = DrawParams;
 
-            dcLevel_AddProjectile(Level, &Proyectil_Mesh, &Character->Location, &Character->FrontVector, Character->ProjectileStrength, DrawParamsPtr); 
+            dcLevel_AddProjectile(Level, &Proyectil_Mesh, &Character->Location, &Character->FrontVector, Character->ProjectileStrength, DrawParamsPtr, Character); 
             Character->bHoldingFire = 0;
             Character->ProjectileStrength = 0;
             Character->FireCurrentCooldown = Character->FireCooldown;

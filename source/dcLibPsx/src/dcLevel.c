@@ -88,10 +88,11 @@ SDC_Character* dcLevel_InitCharacter(SDC_Level *Level, SDC_Mesh3D *Mesh, VECTOR 
     NewCharacter->bDoingDash = 0;
 
     NewCharacter->ParryFrames = 15;
-     NewCharacter->ParryCooldown = 60;
-     NewCharacter->ParryCurrentCooldown =0;
+    NewCharacter->ParryCooldown = 60;
+    NewCharacter->ParryCurrentCooldown =0;
 
-    NewCharacter->Lives = 3;
+    NewCharacter->InitLives = 3;
+    NewCharacter->Lives = NewCharacter->InitLives ;
 
      NewCharacter->DashCooldown = 60;
      NewCharacter->DashCurrentCooldown = 0;
@@ -105,7 +106,7 @@ SDC_Character* dcLevel_InitCharacter(SDC_Level *Level, SDC_Mesh3D *Mesh, VECTOR 
     Level->NumCharacters++;
     return NewCharacter;
 }
-void dcLevel_AddProjectile(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Direction,int Strength, SDC_DrawParams* DrawParams)
+void dcLevel_AddProjectile(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Direction,int Strength, SDC_DrawParams* DrawParams, SDC_Character* Character)
 {
     SDC_Projectile* NewProjectile = malloc3(sizeof(SDC_Projectile));
     NewProjectile->Location = *Location; //<----- to Transform
@@ -119,6 +120,7 @@ void dcLevel_AddProjectile(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location,
     NewProjectile->Direction = *Direction;
     NewProjectile->ExplosionRange = 70;
     NewProjectile->Dmg = 1;
+    NewProjectile->Character = Character;
    // NewProjectile->Init;
     //NewProjectile->PlayerIndex = Level->NumCharacters;
     //Malloc for every object? or with MaxArray size?
