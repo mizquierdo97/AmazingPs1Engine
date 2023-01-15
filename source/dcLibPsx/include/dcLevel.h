@@ -106,6 +106,7 @@ typedef struct SDC_Level
     int NumObjects;
     int MaxObjects;
     SDC_Mesh3D* ExplosionMesh;
+    TIM_IMAGE* White;
 
 // Back color  
 CVECTOR  AmbientColor;

@@ -197,10 +197,10 @@ void dcRender_DrawMesh(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform,
     SetRotMatrix(transform);
     SetTransMatrix(transform);
 
-    const u_short bLighting = drawParams && drawParams->bLighting;
+    //const u_short bLighting = drawParams && drawParams->bLighting;
     CVECTOR* color = drawParams && drawParams->bUseConstantColor ? &drawParams->constantColor : NULL;
     
-        CVECTOR c0, c1, c2;
+        //CVECTOR c0, c1, c2;
         CVECTOR curr_color = {255, 255, 255};
 
         POLY_GT3* polyGT3; 
@@ -228,7 +228,7 @@ void dcRender_DrawMesh(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform,
                 if (nclip <= 0) continue;
                 if ((otz <= 0) || (otz >= orderingTableCount)) continue;
 
-                if(bLighting)
+                /*if(bLighting)
                 {
                     NormalColorCol3(
                         &vertexs[index0].normal, &vertexs[index1].normal, &vertexs[index2].normal, // input normal
@@ -240,7 +240,7 @@ void dcRender_DrawMesh(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform,
                     setRGB1(polyGT3, c1.r, c1.g, c1.b);
                     setRGB2(polyGT3, c2.r, c2.g, c2.b);
                 }
-                else
+                else*/
                 {
                     setRGB0(polyGT3, curr_color.r, curr_color.g, curr_color.b);
                     setRGB1(polyGT3, curr_color.r, curr_color.g, curr_color.b);

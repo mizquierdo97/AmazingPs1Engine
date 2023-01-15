@@ -24,7 +24,9 @@ SRCS = main.c\
 		textures/Letra_A.tim\
 		textures/Pala.tim\
 		textures/floor_texture.tim\
-		textures/tank_texture.tim\
+		textures/red_tank_texture.tim\
+		textures/blue_tank_texture.tim\
+		textures/white.tim\
 		
 CPPFLAGS += -I../third_party/common
 CPPFLAGS += -I../third_party/psyq/include

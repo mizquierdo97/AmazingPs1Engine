@@ -27,6 +27,7 @@
 
 // cubo letras👍
 #include "meshes/Box003.h"
+#include "meshes/wall.h"
 
 //tank pieces
 #include "meshes/body.h"
@@ -62,7 +63,9 @@ extern unsigned long _binary_textures_smile_tim_start[];
 extern unsigned long _binary_textures_Letra_A_tim_start[];
 extern unsigned long _binary_textures_Pala_tim_start[];
 extern unsigned long _binary_textures_floor_texture_tim_start[];
-extern unsigned long _binary_textures_tank_texture_tim_start[];
+extern unsigned long _binary_textures_blue_tank_texture_tim_start[];
+extern unsigned long _binary_textures_red_tank_texture_tim_start[];
+extern unsigned long _binary_textures_white_tim_start[];
 
 
 extern unsigned long _binary_data_accept_vag_start[];
@@ -128,18 +131,20 @@ void InitLevel()
     TIM_IMAGE* tim_smile = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
     TIM_IMAGE* tim_Pala = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));    
     TIM_IMAGE* tim_floor = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
-    TIM_IMAGE* tim_tank = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
+    TIM_IMAGE* tim_red_tank = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
+    TIM_IMAGE* tim_blue_tank = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
+    TIM_IMAGE* tim_white = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
 
     MainLevel.ExplosionMesh = dcMisc_generateSphereMesh(200,2,2);
     //We can move this structure initialization to a function
     SDC_DrawParams DrawParamsCrash = {
-        .tim = tim_tank,
+        .tim = tim_red_tank,
         .constantColor = {255, 255, 255},
         .bLighting = 1,
         .bUseConstantColor = 1
     };    
     SDC_DrawParams DrawParamsCrash2 = {
-        .tim = tim_tank,
+        .tim = tim_blue_tank,
         .constantColor = {255, 255, 255},
         .bLighting = 1,
         .bUseConstantColor = 1
@@ -182,8 +187,10 @@ void InitLevel()
     dcRender_LoadTexture(tim_smile, _binary_textures_Letra_A_tim_start);
     dcRender_LoadTexture(tim_Pala, _binary_textures_Pala_tim_start);
     dcRender_LoadTexture(tim_floor, _binary_textures_floor_texture_tim_start);
-    dcRender_LoadTexture(tim_tank, _binary_textures_tank_texture_tim_start);
-
+    dcRender_LoadTexture(tim_white, _binary_textures_white_tim_start);
+    dcRender_LoadTexture(tim_red_tank, _binary_textures_red_tank_texture_tim_start);
+    dcRender_LoadTexture(tim_blue_tank, _binary_textures_blue_tank_texture_tim_start);
+    MainLevel.White = tim_white;
 
 
     //localizaciones cajas para luego crear los actores
@@ -192,7 +199,6 @@ void InitLevel()
     VECTOR BoxLocation5 = {-125,0, 125, 0};
     VECTOR BoxLocation6 = {-125,0, 250, 0};
 
-    VECTOR WallLocation = {1000,0, 0, 0};
 
 
     /*VECTOR BoxLocation7 = {-125,0, 375, 0};
@@ -228,7 +234,19 @@ void InitLevel()
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation6,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
 
 
-    dcLevel_AddObject(&MainLevel, &wall_Mesh, &WallLocation,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+VECTOR WallHalfSize = {20, 20,20};
+VECTOR Wall1Location = {0, -100, -2000};
+VECTOR Wall2Location = {0, -100, 2000};
+VECTOR Wall3Location = {-2000, -100, 0};
+VECTOR Wall4Location = {2000, -100, 0};
+SVECTOR Wall2Rotation = {0, 2048, 0};
+SVECTOR Wall3Rotation = {0, 1024, 0};
+SVECTOR Wall4Rotation = {0, -1024, 0};
+
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall1Location,&BoxRotation, DrawParamsPtr, Parent, 1 ,&WallHalfSize);    
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall2Location,&Wall2Rotation, DrawParamsPtr, Parent, 1 ,&WallHalfSize);    
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall3Location,&Wall3Rotation, DrawParamsPtr, Parent, 1 ,&WallHalfSize);    
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall4Location,&Wall4Rotation, DrawParamsPtr, Parent, 1 ,&WallHalfSize);
 
 
 
@@ -453,7 +471,19 @@ SVECTOR ObjectNullRotation = {0,0,0};
     }
         Display(&Render, &Camera);
          Display(&FirstPlayerRender, &FirstPlayerCamera);
+         DVECTOR uv = {0,0};
          
+        CVECTOR Red = {255, 0, 0};        
+        CVECTOR Blue = {0, 0, 255};
+        dcRender_DrawSpriteRect(&Render, MainLevel.White, 310, 0,10, 240, &uv, &Red);        
+        dcRender_DrawSpriteRect(&Render, MainLevel.White, 0, 0,320, 10, &uv, &Red);      
+        dcRender_DrawSpriteRect(&Render, MainLevel.White, 0, 310,320, 10, &uv, &Red);
+        dcRender_DrawSpriteRect(&Render, MainLevel.White, 0, 0,10, 240, &uv, &Red);
+        
+        dcRender_DrawSpriteRect(&FirstPlayerRender, MainLevel.White, 310, 0,10, 240, &uv, &Blue);        
+        dcRender_DrawSpriteRect(&FirstPlayerRender, MainLevel.White, 0, 0,320, 10, &uv, &Blue);      
+        dcRender_DrawSpriteRect(&FirstPlayerRender, MainLevel.White, 0, 310,320, 10, &uv, &Blue);
+        dcRender_DrawSpriteRect(&FirstPlayerRender, MainLevel.White, 0, 0,10, 240, &uv, &Blue);
         VSync( 0 );
         DrawSync( 0 );
         SetDispMask( 1 );
