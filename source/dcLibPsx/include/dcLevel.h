@@ -89,7 +89,8 @@ typedef struct  SDC_Character
     int FireCurrentCooldown;
 
     //Parry
-    int bDoingParry;
+    int bDoingParry;    
+    int bCanParry;
     int ParryFrames;
     int ParryCurrentFrame;
     int ParryCooldown;

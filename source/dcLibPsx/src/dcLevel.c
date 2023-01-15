@@ -88,9 +88,10 @@ SDC_Character* dcLevel_InitCharacter(SDC_Level *Level, SDC_Mesh3D *Mesh, VECTOR 
     NewCharacter->bHoldingFire = 0;
     NewCharacter->bDoingDash = 0;
 
-    NewCharacter->ParryFrames = 15;
-    NewCharacter->ParryCooldown = 60;
+    NewCharacter->ParryFrames = 10;
+    NewCharacter->ParryCooldown = 30;
     NewCharacter->ParryCurrentCooldown =0;
+    NewCharacter->bCanParry = 1;
 
     NewCharacter->InitLives = 3;
     NewCharacter->Lives = NewCharacter->InitLives ;
@@ -122,7 +123,7 @@ void dcLevel_AddProjectile(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location,
     NewProjectile->Voy = DC_MIN(DC_MAX(Strength, 5), 10);;
     NewProjectile->Vy = NewProjectile->Voy;
     NewProjectile->Direction = *Direction;
-    NewProjectile->ExplosionRange = 30;
+    NewProjectile->ExplosionRange = 80;
     NewProjectile->Dmg = 1;
     NewProjectile->Character = Character;
    // NewProjectile->Init;
@@ -161,6 +162,21 @@ void dcLevel_DestroyProjectile(SDC_Level* Level, int i)
     dcLevel_AddExplotion(Level, Level->ExplosionMesh, Location, Level->Projectiles[i]->DrawParams);
     //dcLevel_AddExplotion(Level, sphere, &Level->Projectiles[i]->Location, Level->Projectiles[i]->DrawParams, NULL, 0 ,NULL);
 
+
+ for(int n = 0; n < Level->NumCharacters; n++)
+     {
+          //if(dcCollision_SphereOverlapBox(Projectile->Location,Projectile->ExplosionRange,Level->Characters[i]->Location,Level->Characters[i]->))
+          SVECTOR Diff = {Level->Projectiles[i]->Location.vx -  Level->Characters[n]->Location.vx,0, Level->Projectiles[i]->Location.vz - Level->Characters[n]->Location.vz};
+          int Dist =  SquareRoot12( DC_MUL(Diff.vx , Diff.vx) + DC_MUL(Diff.vz , Diff.vz));
+
+          if((Dist < 200) && (Level->Projectiles[i]->Character->PlayerIndex != n) && (!Level->bGameOver)){
+               Level->Characters[n]->Lives--;
+               if(Level->Characters[n]->Lives <= 0)
+               {
+                    Level->bGameOver = 1;
+               }
+          }
+     }
 
     SDC_Projectile** temp = malloc3((Level->NumProjectiles - 1) * sizeof(SDC_Projectile*)); // allocate an array with a size 1 less than the current one
 

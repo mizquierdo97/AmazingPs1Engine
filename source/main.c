@@ -88,8 +88,8 @@ void InitGame()
     int  height = 240;
 
     CVECTOR bgColor = {60, 120, 120};        
-    dcRender_Init(&Render, width, height, bgColor, 4096, 8192 * 6, RENDER_MODE_PAL, 1);
-    dcRender_Init(&FirstPlayerRender, width, height, bgColor, 4096, 8192 * 6 , RENDER_MODE_PAL, 0);
+    dcRender_Init(&Render, width, height, bgColor, 4096, 8192 * 6, RENDER_MODE_NTCS, 1);
+    dcRender_Init(&FirstPlayerRender, width, height, bgColor, 4096, 8192 * 6 , RENDER_MODE_NTCS, 0);
     dcCamera_SetScreenResolution(&Camera, width, height);
     Camera.PlayerCameraIndex = 0;
     dcCamera_SetScreenResolution(&FirstPlayerCamera, width, height);
@@ -111,14 +111,9 @@ void InitLevel()
 
     dcCamera_LookAt(&FirstPlayerCamera, &LookAt);
 
-    CVECTOR  AmbientColor = {50, 50, 50, 0};
-    dcLevel_InitLight(&MainLevel, &AmbientColor);
     MainLevel.NumObjects = 0;
     //Ambient Light
-    dcRender_SetAmbientColor(&Render, &MainLevel.AmbientColor);
-    SVECTOR LightDirection = {-ONE, -2048, 0};
-    SVECTOR LightColor = {ONE, ONE, ONE};
-    dcLevel_SetLight(&MainLevel, 0, &LightDirection, &LightColor);
+    //dcRender_SetAmbientColor(&Render, &MainLevel.AmbientColor);
 
     //SVECTOR LightDirection2 = {ONE, 0, ONE};
     //SVECTOR LightColor2 = {0, ONE, ONE};
@@ -171,9 +166,17 @@ void InitLevel()
         .bLighting = 1,
         .bUseConstantColor = 1
     };
+     SDC_DrawParams DrawWhiteParams = {
+        .tim = tim_white,
+        .constantColor = {0, 50, 100},
+        .bLighting = 1,
+        .bUseConstantColor = 1
+    };
 //printf("\n", DrawParamsFloor.bLighting);
     SDC_DrawParams* DrawParamsFloorPtr = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
     *DrawParamsFloorPtr = DrawParamsFloor;
+        SDC_DrawParams* DrawParamsWhitePtr = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
+    *DrawParamsWhitePtr = DrawWhiteParams;
     SDC_DrawParams* DrawParamsCrashPtr = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
     *DrawParamsCrashPtr = DrawParamsCrash;
 
@@ -199,14 +202,14 @@ void InitLevel()
     //localizaciones cajas para luego crear los actores
     VECTOR BoxLocarion = {000,0, 0, 0};
     VECTOR BoxLocation4 = {375,0, 0, 0};
-    VECTOR BoxLocation5 = {-125,0, 125, 0};
-    VECTOR BoxLocation6 = {-125,0, 250, 0};
+    VECTOR BoxLocation5 = {-500,0, 125, 0};
+    VECTOR BoxLocation6 = {-125,0, -500, 0};
 
 
 
-    /*VECTOR BoxLocation7 = {-125,0, 375, 0};
-    VECTOR BoxLocation8 = {0,125, 0, 0};
-    VECTOR BoxLocation9 = {375,0, 0, 0};
+    VECTOR BoxLocation7 = {-125,0, 900, 0};
+    VECTOR BoxLocation8 = {500,0, 0, 0};
+    /*VECTOR BoxLocation9 = {375,0, 0, 0};
     VECTOR BoxLocation10 = {500,0, 125, 0};
     VECTOR BoxLocation11 = {500,0, 250, 0};
     VECTOR BoxLocation12 = {500,0, 375, 0};
@@ -228,13 +231,15 @@ void InitLevel()
     VECTOR BoxHalfSize = {20,20,20};
     SVECTOR BoxRotation = {0,0,0};
     VECTOR BoxScale = {ONE, ONE, ONE};
-    SDC_Object* Parent = dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocarion, &BoxRotation, &BoxScale, DrawParamsPtr, NULL, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation4,&BoxRotation, &BoxScale,  DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation5, &BoxRotation, &BoxScale, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation6,&BoxRotation,  &BoxScale, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocarion, &BoxRotation, &BoxScale, DrawParamsPtr, NULL, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation4,&BoxRotation, &BoxScale,  DrawParamsPtr, NULL, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation5, &BoxRotation, &BoxScale, DrawParamsPtr, NULL, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation6,&BoxRotation,  &BoxScale, DrawParamsPtr, NULL, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation7, &BoxRotation, &BoxScale, DrawParamsPtr, NULL, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation8,&BoxRotation,  &BoxScale, DrawParamsPtr, NULL, 1 ,&BoxHalfSize);
 
 
-VECTOR WallHalfSize = {20, 20,20};
+VECTOR WallHalfSize = {0, 0,0};
 VECTOR Wall1Location = {2000, -100, -4000};
 VECTOR Wall1Location2 = {-2000, -100, -4000};
 VECTOR Wall2Location = {2000, -100, 4000};
@@ -247,17 +252,27 @@ VECTOR Wall4Location2 = {4000, -100, -2000};
 SVECTOR Wall2Rotation = {0, 2048, 0};
 SVECTOR Wall3Rotation = {0, 1024, 0};
 SVECTOR Wall4Rotation = {0, -1024, 0};
-VECTOR WallScale = { ONE * 1.3,  ONE * 4,  ONE * 1.3};
-    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall1Location,&BoxRotation, &WallScale, DrawParamsFloorPtr, Parent, 1 ,&WallHalfSize); 
-    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall1Location2,&BoxRotation, &WallScale, DrawParamsFloorPtr, Parent, 1 ,&WallHalfSize);    
-    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall2Location,&Wall2Rotation,&WallScale, DrawParamsFloorPtr, Parent, 1 ,&WallHalfSize);
-    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall2Location2,&Wall2Rotation, &WallScale, DrawParamsFloorPtr, Parent, 1 ,&WallHalfSize);      
-    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall3Location,&Wall3Rotation,&WallScale, DrawParamsFloorPtr, Parent, 1 ,&WallHalfSize);
-    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall3Location2,&Wall3Rotation, &WallScale, DrawParamsFloorPtr, Parent, 1 ,&WallHalfSize);      
-    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall4Location,&Wall4Rotation,&WallScale, DrawParamsFloorPtr, Parent, 1 ,&WallHalfSize);
-    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall4Location2,&Wall4Rotation, &WallScale, DrawParamsFloorPtr, Parent, 1 ,&WallHalfSize);  
+VECTOR WallScale = { ONE * 1.3,  ONE * 6,  ONE * 1.3};
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall1Location,&BoxRotation, &WallScale, DrawParamsFloorPtr, NULL, 1 ,&WallHalfSize); 
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall1Location2,&BoxRotation, &WallScale, DrawParamsFloorPtr, NULL, 1 ,&WallHalfSize);    
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall2Location,&Wall2Rotation,&WallScale, DrawParamsFloorPtr, NULL, 1 ,&WallHalfSize);
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall2Location2,&Wall2Rotation, &WallScale, DrawParamsFloorPtr, NULL, 1 ,&WallHalfSize);      
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall3Location,&Wall3Rotation,&WallScale, DrawParamsFloorPtr, NULL, 1 ,&WallHalfSize);
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall3Location2,&Wall3Rotation, &WallScale, DrawParamsFloorPtr, NULL, 1 ,&WallHalfSize);      
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall4Location,&Wall4Rotation,&WallScale, DrawParamsFloorPtr, NULL, 1 ,&WallHalfSize);
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall4Location2,&Wall4Rotation, &WallScale, DrawParamsFloorPtr, NULL, 1 ,&WallHalfSize);  
 
 
+/*
+for(int i = -3; i < 3; i++)
+{
+for(int n = -3; n < 3; n++)
+{
+    VECTOR Floor1Location = {i*1100, -100,n*1100};
+    VECTOR FloorScale = {3000, 3000, 3000};
+    dcLevel_AddObject(&MainLevel, &floor_mesh_Mesh, &Floor1Location,&BoxRotation, &FloorScale, DrawParamsWhitePtr, NULL, 0 ,&WallHalfSize);
+}
+}*/
     /*dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation7,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation8, &BoxRotation,DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
     dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation9,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
@@ -329,7 +344,12 @@ void Display(SDC_Render* InRender, SDC_Camera* InCamera)
 
     //Draw Objects
    for(int i = 0; i < MainLevel.NumObjects; i++)
-    {
+    {        
+        if(MainLevel.Objects[i]->Scale.vx == 0 && MainLevel.Objects[i]->Scale.vy == 0)
+        {
+            continue;
+        }        
+
         if(MainLevel.Objects[i]->CharacterParent != NULL )
         {
             if(MainLevel.Objects[i]->WorldTransform.m[0][0] != 0 || MainLevel.Objects[i]->WorldTransform.m[1][1] != 0)

@@ -53,7 +53,7 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
         if(!Character->bDoingDash  && Character->DashCurrentCooldown <= 0)
         {
         Character->bDoingDash = 1;
-        Character->DashRemaining = 300;//Character->DashDistance;        
+        Character->DashRemaining = 700;//Character->DashDistance;        
            Character->DashCurrentCooldown = Character->DashCooldown;
         }
 
@@ -111,9 +111,12 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
         Character->Rotation.vy -= ONE / Character->ParryFrames;
         if(Character->ParryCurrentFrame > Character->ParryFrames)
         {
-            Character->bDoingParry = 0;            
+            Character->bDoingParry = 0;      
+            Character->bCanParry = 1;      
            Character->Pala->Scale = (VECTOR){0,0,0};
         }
+        if(Character->bCanParry)
+        {
         for(int i = 0; i < Level->NumProjectiles; i++)
         {
             VECTOR ProjectileLocation = Level->Projectiles[i]->Location;
@@ -127,10 +130,10 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
                 Level->Projectiles[i]->Direction = (SVECTOR){-Dir.vx, -Dir.vy, -Dir.vz};
                 Level->Projectiles[i]->Vox *= 3;
                 Level->Projectiles[i]->Vy = 0;
-                Character->bDoingParry = 0;
-                Level->Projectiles[i]->Character = Character;
-           Character->Pala->Scale = (VECTOR){0,0,0};
+                Level->Projectiles[i]->Character = Character;          
+                Character->bCanParry = 0;
             }
+        }
         }
      }
      else{
@@ -141,7 +144,7 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
     {
         FutureLocation.vx = Character->Location.vx + ((Character->Direction.vx * 200) >> 12);    
         FutureLocation.vz = Character->Location.vz + ((Character->Direction.vz * 200) >> 12);
-        Character->DashRemaining -= 200;//Character->DashVelocity;
+        Character->DashRemaining -= 100;//Character->DashVelocity;
         //Character->Rotation.vx += ((Character->Direction.vz * 400) >> 12);        
         //Character->Rotation.vz -= ((Character->Direction.vx * 400) >> 12);
         if(Character->DashRemaining <= 0)
@@ -179,6 +182,8 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
     VECTOR CharacterLocation = Character->Location;
     for(int i = 0; i < Level->NumObjects; i++)
     {
+        if( !Level->Objects[i]->bHasCollision)
+        continue;
         VECTOR ObjectLocation = Level->Objects[i]->Location;
        VECTOR Dist = {ObjectLocation.vx - CharacterLocation.vx,ObjectLocation.vy - CharacterLocation.vy,ObjectLocation.vz - CharacterLocation.vz};
         if(Dist.vx > 200 || Dist.vz > 200)
@@ -189,6 +194,14 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
             break;
         }
 
+    }
+    if(FutureLocation.vx > 3500 || FutureLocation.vx < -3500)
+    {
+        bCanMove = 0;
+    }
+    if(FutureLocation.vz > 3500 || FutureLocation.vz < -3500)
+    {
+        bCanMove = 0;
     }
     if(bCanMove)
     {

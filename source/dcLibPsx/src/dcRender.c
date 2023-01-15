@@ -247,8 +247,16 @@ void dcRender_DrawMesh(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform,
                     setRGB1(polyGT3, curr_color.r, curr_color.g, curr_color.b);
                     setRGB2(polyGT3, curr_color.r, curr_color.g, curr_color.b);
                 }
+                if(mesh->polygonVertexType == POLIGON_VERTEX_TEXTURED_NORMAL)
+                 {
                 setUV3(polyGT3, vertexs[index0].u , vertexs[index0].v, vertexs[index1].u , vertexs[index1].v, vertexs[index2].u , vertexs[index2].v);
-
+                 }
+                 else
+                 {
+                    setRGB0(polyGT3, 128, 128, 128);
+                    setRGB1(polyGT3, 128, 128, 128);
+                    setRGB2(polyGT3, 128, 128, 128);
+                 }
 
 				addPrim(&orderingTable[otz], polyGT3);
                 _dcRender_IncPrimitive(render, sizeof(POLY_GT3));

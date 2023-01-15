@@ -22,7 +22,7 @@ void UpdateProjectile(SDC_Level* Level, SDC_Projectile* Projectile, int IndexInA
           VECTOR Dist = {ObjectLocation.vx - ProjectileLocation.vx,ObjectLocation.vy - ProjectileLocation.vy,ObjectLocation.vz - ProjectileLocation.vz};
      if(Dist.vx > 200 || Dist.vz > 200)
      continue;
-          if(dcCollision_SphereOverlapBox(&FutureLocation, 50, &Level->Objects[i]->Location, &Level->Objects[i]->BoxHalfSize))
+          if(dcCollision_SphereOverlapBox(&Projectile->Location, 50, &Level->Objects[i]->Location, &Level->Objects[i]->BoxHalfSize))
           {
                bCanMove = 0;
                break;
@@ -43,13 +43,9 @@ void UpdateProjectile(SDC_Level* Level, SDC_Projectile* Projectile, int IndexInA
           //if(dcCollision_SphereOverlapBox(Projectile->Location,Projectile->ExplosionRange,Level->Characters[i]->Location,Level->Characters[i]->))
           SVECTOR Diff = {Projectile->Location.vx -  Level->Characters[i]->Location.vx,0, Projectile->Location.vz - Level->Characters[i]->Location.vz};
           int Dist =  SquareRoot12( DC_MUL(Diff.vx , Diff.vx) + DC_MUL(Diff.vz , Diff.vz));
-printf("%i \n", Dist);
-          if((Dist < Projectile->ExplosionRange) && (Projectile->Character->PlayerIndex != i) && (!Level->bGameOver)){
-               Level->Characters[i]->Lives--;
-               if(Level->Characters[i]->Lives <= 0)
-               {
-                    Level->bGameOver = 1;
-               }
+
+          if((Dist < 100) && (Projectile->Character->PlayerIndex != i) && (!Level->bGameOver)){
+
                if(!bProjectileDead)
                {
                     dcLevel_DestroyProjectile(Level, IndexInArray);
