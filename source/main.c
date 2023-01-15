@@ -229,26 +229,35 @@ void InitLevel()
     
     VECTOR BoxHalfSize = {20,20,20};
     SVECTOR BoxRotation = {0,0,0};
-    SDC_Object* Parent = dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocarion, &BoxRotation, DrawParamsPtr, NULL, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation4,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation5, &BoxRotation,DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation6,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    VECTOR BoxScale = {ONE, ONE, ONE};
+    SDC_Object* Parent = dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocarion, &BoxRotation, &BoxScale, DrawParamsPtr, NULL, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation4,&BoxRotation, &BoxScale,  DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation5, &BoxRotation, &BoxScale, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
+    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation6,&BoxRotation,  &BoxScale, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
 
 
 VECTOR WallHalfSize = {20, 20,20};
-VECTOR Wall1Location = {0, -100, -2000};
-VECTOR Wall2Location = {0, -100, 2000};
-VECTOR Wall3Location = {-2000, -100, 0};
-VECTOR Wall4Location = {2000, -100, 0};
+VECTOR Wall1Location = {2000, -100, -4000};
+VECTOR Wall1Location2 = {-2000, -100, -4000};
+VECTOR Wall2Location = {2000, -100, 4000};
+VECTOR Wall2Location2 = {-2000, -100, 4000};
+VECTOR Wall3Location = {-4000, -100, 2000};
+VECTOR Wall3Location2 = {-4000, -100, -2000};
+VECTOR Wall4Location = {4000, -100, 2000};
+VECTOR Wall4Location2 = {4000, -100, -2000};
+
 SVECTOR Wall2Rotation = {0, 2048, 0};
 SVECTOR Wall3Rotation = {0, 1024, 0};
 SVECTOR Wall4Rotation = {0, -1024, 0};
-
-    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall1Location,&BoxRotation, DrawParamsPtr, Parent, 1 ,&WallHalfSize);    
-    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall2Location,&Wall2Rotation, DrawParamsPtr, Parent, 1 ,&WallHalfSize);    
-    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall3Location,&Wall3Rotation, DrawParamsPtr, Parent, 1 ,&WallHalfSize);    
-    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall4Location,&Wall4Rotation, DrawParamsPtr, Parent, 1 ,&WallHalfSize);
-
+VECTOR WallScale = { ONE * 1.3,  ONE * 4,  ONE * 1.3};
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall1Location,&BoxRotation, &WallScale, DrawParamsFloorPtr, Parent, 1 ,&WallHalfSize); 
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall1Location2,&BoxRotation, &WallScale, DrawParamsFloorPtr, Parent, 1 ,&WallHalfSize);    
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall2Location,&Wall2Rotation,&WallScale, DrawParamsFloorPtr, Parent, 1 ,&WallHalfSize);
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall2Location2,&Wall2Rotation, &WallScale, DrawParamsFloorPtr, Parent, 1 ,&WallHalfSize);      
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall3Location,&Wall3Rotation,&WallScale, DrawParamsFloorPtr, Parent, 1 ,&WallHalfSize);
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall3Location2,&Wall3Rotation, &WallScale, DrawParamsFloorPtr, Parent, 1 ,&WallHalfSize);      
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall4Location,&Wall4Rotation,&WallScale, DrawParamsFloorPtr, Parent, 1 ,&WallHalfSize);
+    dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall4Location2,&Wall4Rotation, &WallScale, DrawParamsFloorPtr, Parent, 1 ,&WallHalfSize);  
 
 
     /*dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation7,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);

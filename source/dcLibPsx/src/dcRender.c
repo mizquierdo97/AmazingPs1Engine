@@ -225,8 +225,9 @@ void dcRender_DrawMesh(SDC_Render* render,  SDC_Mesh3D* mesh, MATRIX* transform,
                 }
                 nclip = RotAverageNclip3(&vertexs[index0].position, &vertexs[index1].position, &vertexs[index2].position,
                                         (long *)&polyGT3->x0, (long *)&polyGT3->x1, (long *)&polyGT3->x2, &p, &otz, &flg);
+                               
                 if (nclip <= 0) continue;
-                if ((otz <= 0) || (otz >= orderingTableCount)) continue;
+                if (((otz <= 0) || (otz >= orderingTableCount)) && !mesh->CheckDraw) continue;
 
                 /*if(bLighting)
                 {

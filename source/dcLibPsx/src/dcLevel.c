@@ -38,12 +38,12 @@ void dcLevel_SetLight(SDC_Level* Level, int LightIndex, SVECTOR* LightDirection,
 
 }
 
-SDC_Object* dcLevel_AddObject(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Rotation, SDC_DrawParams* DrawParams, SDC_Object* Parent, int bHasCollision, VECTOR* BoxHalfCollision)
+SDC_Object* dcLevel_AddObject(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR* Location, SVECTOR* Rotation, VECTOR* Scale, SDC_DrawParams* DrawParams, SDC_Object* Parent, int bHasCollision, VECTOR* BoxHalfCollision)
 {
     SDC_Object* Obj = malloc3(sizeof(SDC_Object));
     Obj->Location = *Location; //<----- to Transform
     Obj->Rotation = *Rotation;
-    Obj->Scale = (VECTOR){ONE,ONE,ONE};
+    Obj->Scale = *Scale;
     Obj->Mesh = Mesh;
     Obj->DrawParams = DrawParams;
     Obj->Parent = Parent;
@@ -127,7 +127,7 @@ void dcLevel_AddProjectile(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location,
     NewProjectile->Voy = DC_MIN(DC_MAX(Strength, 5), 10);;
     NewProjectile->Vy = NewProjectile->Voy;
     NewProjectile->Direction = *Direction;
-    NewProjectile->ExplosionRange = 70;
+    NewProjectile->ExplosionRange = 30;
     NewProjectile->Dmg = 1;
     NewProjectile->Character = Character;
    // NewProjectile->Init;

@@ -116,6 +116,7 @@ typedef struct {
     u_short   numIndices;
     u_short   numVertices;
     EDC_PolygonVertexType polygonVertexType;
+    int CheckDraw;
     
 } SDC_Mesh3D;
 
