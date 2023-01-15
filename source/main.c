@@ -68,6 +68,7 @@ extern unsigned long _binary_textures_white_tim_start[];
 
 extern unsigned long _binary_data_Fire_vag_start[];
 extern unsigned long _binary_data_Hit_vag_start[];
+extern unsigned long _binary_data_Miss_vag_start[];
 //extern unsigned long _binary_data_bell_vag_start[];
 
 int GameOverSeconds;
@@ -100,9 +101,6 @@ void InitGame()
 //This should go to a separate .h so we can modify the level without having conflicts
 void InitLevel()
 {    
-
-
-
     //Camera Init
     long CameraDistance = 500;
     dcCamera_SetCameraPosition(&Camera, 0, 0, CameraDistance);
@@ -387,7 +385,9 @@ int main(void)
     //dcAudio_MusicPlay(&Audio, 0);
     dcAudio_SfxLoad(&Audio, &MainLevel.HitSfx, (u_char *)_binary_data_Hit_vag_start);
     dcAudio_SfxLoad(&Audio, &MainLevel.FireSfx, (u_char *)_binary_data_Fire_vag_start);
-    
+     dcAudio_SfxLoad(&Audio, &MainLevel.MissSfx, (u_char *)_binary_data_Miss_vag_start);
+
+    dcAudio_MusicPlay(&Audio, 0);
 
     dcFont_UseSystemFont();
     //dcAudio_SfxLoad(&audio, &bellSfx, (u_char *)_binary_data_bell_vag_start);

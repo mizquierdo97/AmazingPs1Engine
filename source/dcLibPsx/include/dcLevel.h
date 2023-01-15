@@ -101,6 +101,7 @@ typedef struct SDC_Level
 {
     SDC_Sfx HitSfx;
     SDC_Sfx FireSfx;
+    SDC_Sfx MissSfx;
     int bGameOver;
     SDC_Object** Objects;
     SDC_Character** Characters;

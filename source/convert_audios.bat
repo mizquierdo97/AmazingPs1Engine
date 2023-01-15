@@ -2,3 +2,4 @@
 
 ..\tools\wav2vag\wav2vag.exe sfx\Fire.wav data\Fire.vag
 ..\tools\wav2vag\wav2vag.exe sfx\Hit.wav data\Hit.vag
+..\tools\wav2vag\wav2vag.exe sfx\Miss.wav data\Miss.vag

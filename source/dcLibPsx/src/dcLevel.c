@@ -9,11 +9,6 @@
 #include "dcMisc.h"
 #include "dcAudio.h"
 
-
-
-extern unsigned long _binary_data_Fire_vag_start[];
-extern unsigned long _binary_data_Hit_vag_start[];
-
 void dcLevel_InitLight(SDC_Level *Level, CVECTOR *AmbientColor)
 {
     Level->AmbientColor = *AmbientColor;

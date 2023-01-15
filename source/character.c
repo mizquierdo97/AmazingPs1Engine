@@ -5,6 +5,7 @@
 #include "dcMath.h"
 #include "dcAudio.h"
 #include "meshes/Proyectil.h"
+#include "dcAudio.h"
 
 extern unsigned long _binary_data_Hit_vag_start[];
 SDC_Sfx HitSfx;
@@ -61,6 +62,9 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
     {
         if(!Character->bDoingParry && Character->ParryCurrentCooldown <= 0)
         {
+            //Sound
+            dcAudio_SfxPlay(&Level->MissSfx);
+
             Character->bDoingParry = 1;
             Character->ParryCurrentFrame = 0;
            Character->ParryCurrentCooldown = Character->ParryCooldown;

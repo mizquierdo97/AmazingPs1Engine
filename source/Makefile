@@ -20,6 +20,7 @@ SRCS = main.c\
 		textures/colorpallete.tim\
 		data/Fire.vag\
 		data/Hit.vag\
+		data/Miss.vag\
 		data/accept.vag\
 		data/beep.vag\
 		data/bell.vag\
