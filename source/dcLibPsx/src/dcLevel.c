@@ -19,7 +19,6 @@ void dcLevel_SetLight(SDC_Level* Level, int LightIndex, SVECTOR* LightDirection,
 {
     if(LightIndex >= 3)
     {
-        //BRO :(
         return;
     }
 
@@ -126,8 +125,7 @@ void dcLevel_AddProjectile(SDC_Level* Level, SDC_Mesh3D* Mesh, VECTOR* Location,
     NewProjectile->ExplosionRange = 80;
     NewProjectile->Dmg = 1;
     NewProjectile->Character = Character;
-   // NewProjectile->Init;
-    //NewProjectile->PlayerIndex = Level->NumCharacters;
+
     //Malloc for every object? or with MaxArray size?
     Level->Projectiles = realloc3(Level->Projectiles, (Level->NumProjectiles + 1) * sizeof(SDC_Projectile*));
     Level->Projectiles[Level->NumProjectiles] = NewProjectile;
@@ -147,7 +145,6 @@ void dcLevel_AddExplotion(SDC_Level *Level, SDC_Mesh3D* Mesh, VECTOR Location, S
     Explotion->ExpansionSpeed = 10;
 
     
-    //Malloc for every object? or with MaxArray size?
     Level->Explotions = realloc3(Level->Explotions, (Level->NumExplotions + 1) * sizeof(SDC_Explotion*));
     Level->Explotions[Level->NumExplotions] = Explotion;    
     Level->NumExplotions++;
@@ -160,8 +157,6 @@ void dcLevel_DestroyProjectile(SDC_Level* Level, int i)
     //Change DrawParams in the future
     VECTOR Location = Level->Projectiles[i]->Location;
     dcLevel_AddExplotion(Level, Level->ExplosionMesh, Location, Level->Projectiles[i]->DrawParams);
-    //dcLevel_AddExplotion(Level, sphere, &Level->Projectiles[i]->Location, Level->Projectiles[i]->DrawParams, NULL, 0 ,NULL);
-
 
  for(int n = 0; n < Level->NumCharacters; n++)
      {

@@ -31,13 +31,6 @@
 
 //tank pieces
 #include "meshes/body.h"
-//#include "meshes/cannon.h"
-//#include "meshes/head.h"
-//#include "meshes/left_eye.h"
-//#include "meshes/right_eye.h"
-#include "meshes/Bonifacio.h"
-//#include "meshes/floor_mesh.h"
-
 #include "meshes/Bonifacio.h"
 
 #include "meshes/wall.h"
@@ -47,14 +40,12 @@
 SDC_Audio Audio;
 SDC_Render Render;
 SDC_Render FirstPlayerRender;
-SDC_Render SecondPlayerRender;
 SDC_Camera Camera;
 SDC_Camera FirstPlayerCamera;
 SDC_Level MainLevel;
 SDC_Character* FirstCharacter;
 SDC_Character* SecondCharacter;
 
-// Display and draw environments, double buffered
 
 extern unsigned long _binary_textures_colorpallete_tim_start[];
 extern unsigned long _binary_textures_smile_tim_start[];
@@ -69,7 +60,6 @@ extern unsigned long _binary_textures_white_tim_start[];
 extern unsigned long _binary_data_Fire_vag_start[];
 extern unsigned long _binary_data_Hit_vag_start[];
 extern unsigned long _binary_data_Miss_vag_start[];
-//extern unsigned long _binary_data_bell_vag_start[];
 
 int GameOverSeconds;
 int CurrentGameOverSeconds;
@@ -94,38 +84,16 @@ void InitGame()
     Camera.PlayerCameraIndex = 0;
     dcCamera_SetScreenResolution(&FirstPlayerCamera, width, height);
     FirstPlayerCamera.PlayerCameraIndex = 1;
-
-
+    
+    MainLevel.ExplosionMesh = dcMisc_generateSphereMesh(200,2,2);
 }
 
 //This should go to a separate .h so we can modify the level without having conflicts
 void InitLevel()
-{    
-    //Camera Init
-    long CameraDistance = 500;
-    dcCamera_SetCameraPosition(&Camera, 0, 0, CameraDistance);
-    VECTOR LookAt = {0,0, 0};
-    dcCamera_LookAt(&Camera, &LookAt);
-
-    dcCamera_SetCameraPosition(&FirstPlayerCamera, 0, 200, CameraDistance);
-
-    dcCamera_LookAt(&FirstPlayerCamera, &LookAt);
-
-    MainLevel.NumObjects = 0;
-    //Ambient Light
-    //dcRender_SetAmbientColor(&Render, &MainLevel.AmbientColor);
-
-    //SVECTOR LightDirection2 = {ONE, 0, ONE};
-    //SVECTOR LightColor2 = {0, ONE, ONE};
-    //dcLevel_SetLight(&MainLevel, 1, &LightDirection2, &LightColor2);
-
-    //SVECTOR LightDirection3 = {0, ONE, 0};
-    //SVECTOR LightColor3 = {ONE, 0, ONE};
-    //dcLevel_SetLight(&MainLevel, 2, &LightDirection3, &LightColor3);
-
+{ 
+    MainLevel.NumObjects = 0;  
     SetColorMatrix(&MainLevel.ColorMatrix);
 
-    TIM_IMAGE* tim_crash = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));    
     TIM_IMAGE* tim_smile = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
     TIM_IMAGE* tim_Pala = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));    
     TIM_IMAGE* tim_floor = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
@@ -133,7 +101,6 @@ void InitLevel()
     TIM_IMAGE* tim_blue_tank = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
     TIM_IMAGE* tim_white = (TIM_IMAGE*)malloc3(sizeof(TIM_IMAGE));
 
-    MainLevel.ExplosionMesh = dcMisc_generateSphereMesh(200,2,2);
     //We can move this structure initialization to a function
     SDC_DrawParams DrawParamsCrash = {
         .tim = tim_red_tank,
@@ -154,7 +121,7 @@ void InitLevel()
         .bUseConstantColor = 1
     };
        
-            SDC_DrawParams DrawParamsFloor = {
+    SDC_DrawParams DrawParamsFloor = {
         .tim = tim_floor,
         .constantColor = {255, 255, 255},
         .bLighting = 1,
@@ -189,7 +156,6 @@ void InitLevel()
     SDC_DrawParams* DrawParamsPtr = (SDC_DrawParams*)malloc3(sizeof(SDC_DrawParams));
     *DrawParamsPtr = DrawParams;
 
-    dcRender_LoadTexture(tim_crash, _binary_textures_colorpallete_tim_start);
     dcRender_LoadTexture(tim_smile, _binary_textures_Letra_A_tim_start);
     dcRender_LoadTexture(tim_Pala, _binary_textures_Pala_tim_start);
     dcRender_LoadTexture(tim_floor, _binary_textures_floor_texture_tim_start);
@@ -209,25 +175,8 @@ void InitLevel()
 
     VECTOR BoxLocation7 = {-125,0, 900, 0};
     VECTOR BoxLocation8 = {500,0, 0, 0};
-    /*VECTOR BoxLocation9 = {375,0, 0, 0};
-    VECTOR BoxLocation10 = {500,0, 125, 0};
-    VECTOR BoxLocation11 = {500,0, 250, 0};
-    VECTOR BoxLocation12 = {500,0, 375, 0};
 
-    VECTOR BoxLocation13 = {0,0, -500, 0};
-    VECTOR BoxLocation16 = {375,0, -500, 0};
-    VECTOR BoxLocation17 = {0,125, -500, 0};
-    VECTOR BoxLocation18 = {375,125, -500, 0};
-    VECTOR BoxLocation19 = {-125,0, -625, 0};
-    VECTOR BoxLocation20 = {-125,0, -750, 0};
-    VECTOR BoxLocation21 = {-125,0, -875, 0};
-
-    VECTOR BoxLocation22 = {500,0, -625, 0};
-    VECTOR BoxLocation23 = {500,0, -750, 0};
-    VECTOR BoxLocation24 = {500,0, -875, 0};
-*/
-    VECTOR palaLocation = {10,50, 0, 0};   
-    
+    VECTOR palaLocation = {10,50, 0, 0};       
     VECTOR BoxHalfSize = {20,20,20};
     SVECTOR BoxRotation = {0,0,0};
     VECTOR BoxScale = {ONE, ONE, ONE};
@@ -263,43 +212,9 @@ VECTOR WallScale = { ONE * 1.3,  ONE * 6,  ONE * 1.3};
     dcLevel_AddObject(&MainLevel, &wall_Mesh, &Wall4Location2,&Wall4Rotation, &WallScale, DrawParamsFloorPtr, NULL, 1 ,&WallHalfSize);  
 
 
-/*
-for(int i = -3; i < 3; i++)
-{
-for(int n = -3; n < 3; n++)
-{
-    VECTOR Floor1Location = {i*1100, -100,n*1100};
-    VECTOR FloorScale = {3000, 3000, 3000};
-    dcLevel_AddObject(&MainLevel, &floor_mesh_Mesh, &Floor1Location,&BoxRotation, &FloorScale, DrawParamsWhitePtr, NULL, 0 ,&WallHalfSize);
-}
-}*/
-    /*dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation7,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation8, &BoxRotation,DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation9,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation10,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation11,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation12,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation13,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation16,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation17, &BoxRotation,DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation18,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation19,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation20,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation21,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation22,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation23,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize);
-    dcLevel_AddObject(&MainLevel, &Box003_Mesh, &BoxLocation24,&BoxRotation, DrawParamsPtr, Parent, 1 ,&BoxHalfSize); */
-    
-
-
-//VECTOR nullbox = {0,0,0};
-//VECTOR floorLocation = {0,-100,0};
-    //dcLevel_AddObject(&MainLevel, &floor_mesh_Mesh, &floorLocation,&BoxRotation, DrawParamsFloorPtr, NULL, 0 ,&nullbox);
-    
-        
     FirstCharacter = dcLevel_InitCharacter(&MainLevel, &body_Mesh, &CharacterInitialLocation, DrawParamsCrashPtr);
     SecondCharacter =dcLevel_InitCharacter(&MainLevel, &body_Mesh, &Character2InitialLocation, DrawParamsCrashPtr2);    
-    //el bonifacio
+
 
     SVECTOR PalaRotation = {2048, 0 ,1024};
     SDC_Object* Pala = dcLevel_AddObjectOnCharacter(&MainLevel, &Bonifacio_Mesh, &palaLocation, &PalaRotation, DrawParamsPalaPtr, FirstCharacter, 1 ,&BoxHalfSize);
@@ -310,19 +225,15 @@ for(int n = -3; n < 3; n++)
         SecondCharacter->Pala = Pala2;
     SecondCharacter->tim_projectile = tim_smile;
 
+//Save world Matrix
     MATRIX Transform;
    for(int i = 0; i < MainLevel.NumObjects; i++)
     {  
         MATRIX WorldTransform;
-        //MainLevel.Objects[i]->Rotation.vy += 10;
         RotMatrix(&MainLevel.Objects[i]->Rotation, &Transform);
         TransMatrix(&Transform,  &MainLevel.Objects[i]->Location);
         ScaleMatrixL(&Transform, &MainLevel.Objects[i]->Scale);
-        if(MainLevel.Objects[i]->CharacterParent != NULL)
-        {
-
-        }
-        else
+        if(MainLevel.Objects[i]->CharacterParent == NULL)
         {
             GetParentTransform(MainLevel.Objects[i], &Transform, &WorldTransform);
         }
@@ -333,13 +244,13 @@ for(int n = -3; n < 3; n++)
 void Display(SDC_Render* InRender, SDC_Camera* InCamera)
 {
      MATRIX OutTransform;
+
+     //DrawCharacters
     for(int i = 0; i < MainLevel.NumCharacters; i++)
     {
         dcCamera_ApplyCameraTransform(InCamera,  &MainLevel.Characters[i]->WorldTransform,  &OutTransform);
         dcRender_DrawMesh(InRender, MainLevel.Characters[i]->Mesh, &OutTransform, MainLevel.Characters[i]->DrawParams);        
-    }
-    
-
+    } 
 
 
     //Draw Objects
@@ -381,13 +292,13 @@ void Display(SDC_Render* InRender, SDC_Camera* InCamera)
         dcCamera_ApplyCameraTransform(InCamera,  &OutTransform,  &OutTransform);
         dcRender_DrawMesh(InRender, MainLevel.Projectiles[i]->Mesh, &OutTransform, MainLevel.Projectiles[i]->DrawParams);
     }
+
         for(int i = 0; i < MainLevel.NumExplotions; i++)
     {
         RotMatrix(&MainLevel.Explotions[i]->Rotation, &OutTransform);
         TransMatrix(&OutTransform,  &MainLevel.Explotions[i]->Location);
         ScaleMatrix(&OutTransform,  &MainLevel.Explotions[i]->Scale);
         dcCamera_ApplyCameraTransform(InCamera,  &OutTransform,  &OutTransform);
-        //dcRender_PreDrawMesh(&MainLevel, InCamera, &MainLevel.Explotions[i]->Location, &MainLevel.Explotions[i]->Rotation, &WorldTransform);
         dcRender_DrawMesh(InRender, MainLevel.Explotions[i]->Mesh, &OutTransform, MainLevel.Explotions[i]->DrawParams);
     }
     dcRender_SwapBuffers(InRender);
@@ -402,20 +313,16 @@ int main(void)
 
     //Sound
     dcAudio_Init(&Audio, 16);
-    //dcAudio_MusicPlay(&Audio, 0);
     dcAudio_SfxLoad(&Audio, &MainLevel.HitSfx, (u_char *)_binary_data_Hit_vag_start);
     dcAudio_SfxLoad(&Audio, &MainLevel.FireSfx, (u_char *)_binary_data_Fire_vag_start);
-     dcAudio_SfxLoad(&Audio, &MainLevel.MissSfx, (u_char *)_binary_data_Miss_vag_start);
+    dcAudio_SfxLoad(&Audio, &MainLevel.MissSfx, (u_char *)_binary_data_Miss_vag_start);
 
     dcAudio_MusicPlay(&Audio, 0);
 
     dcFont_UseSystemFont();
-    //dcAudio_SfxLoad(&audio, &bellSfx, (u_char *)_binary_data_bell_vag_start);
-    //dcAudio_SfxLoad(&audio, &acceptSfx, (u_char *)_binary_data_accept_vag_start);
-    //dcAudio_SfxLoad(&audio, &beepSfx, (u_char *)_binary_data_beep_vag_start); 
     RotMatrix_gte(&MainLevel.LightAngle, &MainLevel.RotLight);
-
-SVECTOR ObjectNullRotation = {0,0,0};
+/*
+        SVECTOR ObjectNullRotation = {0,0,0};
         RotMatrix_gte(&MainLevel.LightAngle, &MainLevel.RotLight);
         RotMatrix_gte(&ObjectNullRotation, &MainLevel.RotObject);  
         // RotMatrix cube * RotMatrix light
@@ -423,7 +330,7 @@ SVECTOR ObjectNullRotation = {0,0,0};
         // Light Matrix * RotMatrix light 
         MulMatrix0(&MainLevel.LocalLightMatrix, &MainLevel.RotLight, &MainLevel.WorldLightMatrix);
         // Set new light matrix 
-        SetLightMatrix(&MainLevel.WorldLightMatrix);    
+        SetLightMatrix(&MainLevel.WorldLightMatrix);    */
         int TimeToChangeScreen = 0;
         int bIsScreenSwapped = 0; 
     while (1) 

@@ -85,7 +85,6 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
         if(Character->bHoldingFire)
         {
             //FIRE
-            //We can move this structure initialization to a function
             SDC_DrawParams DrawParams = {
                 .tim = Character->tim_projectile,
                 .constantColor = {255, 255, 255},
@@ -104,6 +103,8 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
 
             Character->FireCurrentCooldown--;
     }
+
+    //Calculate character collision to check if it can move
      VECTOR FutureLocation = {Character->Location.vx, Character->Location.vy, Character->Location.vz};
      if(Character->bDoingParry)
      { 
@@ -144,9 +145,7 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
     {
         FutureLocation.vx = Character->Location.vx + ((Character->Direction.vx * 200) >> 12);    
         FutureLocation.vz = Character->Location.vz + ((Character->Direction.vz * 200) >> 12);
-        Character->DashRemaining -= 100;//Character->DashVelocity;
-        //Character->Rotation.vx += ((Character->Direction.vz * 400) >> 12);        
-        //Character->Rotation.vz -= ((Character->Direction.vx * 400) >> 12);
+        Character->DashRemaining -= 100;
         if(Character->DashRemaining <= 0)
         {
             Character->Rotation.vx = 0;            
@@ -159,26 +158,26 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
     {
         Character->DashCurrentCooldown--;
         if(IncrementalPosition.vx != 0 || IncrementalPosition.vz != 0)
-    {
+        {
     
-    if(!Character->bDoingParry)
-    {
-      SVECTOR Dir;    
-    VectorNormalSS(&IncrementalPosition, &Dir);
-    SVECTOR Diff = {Dir.vx -  Character->Direction.vx,Dir.vy -  Character->Direction.vy,Dir.vz -  Character->Direction.vz};
-    int LerpSpeed = 2;
-    SVECTOR DIffDivided = {Diff.vx / LerpSpeed, Diff.vy / LerpSpeed, Diff.vz / LerpSpeed};
-    SVECTOR Summ = {Character->Direction.vx + DIffDivided.vx, Character->Direction.vy + DIffDivided.vy, Character->Direction.vz + DIffDivided.vz};
-    Character->Direction =  Summ;
+            if(!Character->bDoingParry)
+            {
+                SVECTOR Dir;    
+                VectorNormalSS(&IncrementalPosition, &Dir);
+                SVECTOR Diff = {Dir.vx -  Character->Direction.vx,Dir.vy -  Character->Direction.vy,Dir.vz -  Character->Direction.vz};
+                int LerpSpeed = 2;
+                SVECTOR DIffDivided = {Diff.vx / LerpSpeed, Diff.vy / LerpSpeed, Diff.vz / LerpSpeed};
+                SVECTOR Summ = {Character->Direction.vx + DIffDivided.vx, Character->Direction.vy + DIffDivided.vy, Character->Direction.vz + DIffDivided.vz};
+                Character->Direction =  Summ;
 
-    long atan2 = ratan2(Character->Direction.vx, Character->Direction.vz);
-    Character->Rotation.vy = atan2;
-    }
+                long atan2 = ratan2(Character->Direction.vx, Character->Direction.vz);
+                Character->Rotation.vy = atan2;
+            }
         FutureLocation.vx = Character->Location.vx + IncrementalPosition.vx;    
         FutureLocation.vz =  Character->Location.vz + IncrementalPosition.vz;
+        }
     }
-    }
-     int bCanMove = 1;
+    int bCanMove = 1;
     VECTOR CharacterLocation = Character->Location;
     for(int i = 0; i < Level->NumObjects; i++)
     {
@@ -195,6 +194,8 @@ void UpdateCharacter(SDC_Character* Character, SDC_Level* Level)
         }
 
     }
+
+    //Collision with map limits
     if(FutureLocation.vx > 3500 || FutureLocation.vx < -3500)
     {
         bCanMove = 0;
