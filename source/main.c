@@ -73,8 +73,8 @@ extern unsigned long _binary_data_Miss_vag_start[];
 
 int GameOverSeconds;
 int CurrentGameOverSeconds;
-VECTOR CharacterInitialLocation = {150,0, 0, 0};
-VECTOR Character2InitialLocation = {-100, 0, 0, 0};
+VECTOR CharacterInitialLocation = {300,0, 300, 0};
+VECTOR Character2InitialLocation = {-300, 0, 300, 0};
 
 void InitGame()
 {
